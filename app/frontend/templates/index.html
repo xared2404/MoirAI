@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MoirAI - Plataforma inteligente de matching laboral para estudiantes de UNRC">
+    <meta name="keywords" content="empleo, estudiantes, matching laboral, UNRC, inteligencia artificial">
+    <title>MoirAI - Plataforma de Matching Laboral</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navegación Sidebar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/">
+                    <i class="fas fa-brain"></i>
+                    <span>MoirAI</span>
+                </a>
+            </div>
+
+            <div class="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/oportunidades" class="nav-link" data-tooltip="Oportunidades">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Oportunidades</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/empresas" class="nav-link" data-tooltip="Empresas">
+                            <i class="fas fa-building"></i>
+                            <span>Empresas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/estudiantes" class="nav-link" data-tooltip="Estudiantes">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Estudiantes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contact" class="nav-link" data-tooltip="Contacto">
+                            <i class="fas fa-envelope"></i>
+                            <span>Contacto</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-cta">
+                <button class="btn btn-secondary" onclick="scrollToLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Inicia Sesión
+                </button>
+                <button class="btn btn-primary" onclick="scrollToRegister()">
+                    <i class="fas fa-plus"></i> Únete Ahora
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Conecta tu talento con las oportunidades que necesitas</h1>
+                <p class="hero-subtitle">MoirAI utiliza inteligencia artificial para encontrar el empleo perfecto para
+                    ti, analizando tu perfil académico y habilidades para matchearlas con las mejores oportunidades
+                    laborales.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary btn-lg" onclick="scrollToRegister()">
+                        <i class="fas fa-rocket"></i> Comienza Hoy
+                    </button>
+                    <button class="btn btn-outline btn-lg"
+                        onclick="document.getElementById('demo-modal').style.display='flex'">
+                        <i class="fas fa-play-circle"></i> Ver Demo
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <h3>500+</h3>
+                        <p>Estudiantes Activos</p>
+                    </div>
+                    <div class="stat">
+                        <h3>150+</h3>
+                        <p>Empresas Colaboradoras</p>
+                    </div>
+                    <div class="stat">
+                        <h3>1000+</h3>
+                        <p>Empleos Disponibles</p>
+                    </div>
+                    <div class="stat">
+                        <h3>92%</h3>
+                        <p>Tasa de Éxito</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-image">
+                    <div class="floating-card card-1">
+                        <i class="fas fa-user-check"></i>
+                        <span>Perfil Verificado</span>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="fas fa-star"></i>
+                        <span>95% Match</span>
+                    </div>
+                    <div class="floating-card card-3">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Oportunidad Nueva</span>
+                    </div>
+                    <div class="hero-illustration">
+                        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#730f33;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#e2bb84;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="200" cy="200" r="180" fill="url(#grad1)" opacity="0.1" />
+                            <circle cx="200" cy="200" r="150" fill="none" stroke="url(#grad1)" stroke-width="2"
+                                opacity="0.3" />
+                            <rect x="150" y="120" width="100" height="120" rx="10" fill="url(#grad1)" opacity="0.8" />
+                            <circle cx="200" cy="140" r="25" fill="white" opacity="0.9" />
+                            <rect x="170" y="175" width="60" height="8" rx="4" fill="white" opacity="0.7" />
+                            <rect x="170" y="190" width="45" height="6" rx="3" fill="white" opacity="0.5" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Características Poderosas</h2>
+                <p>Herramientas inteligentes diseñadas para tu éxito laboral</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Análisis NLP Inteligente</h3>
+                    <p>Nuestros modelos de inteligencia artificial analizan tu currículum y perfil para extraer tus
+                        habilidades técnicas y blandas automáticamente.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Matchmaking Automático</h3>
+                    <p>Algoritmos avanzados comparan tu perfil con miles de vacantes para encontrar las oportunidades
+                        más relevantes para ti.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Notificaciones Inteligentes</h3>
+                    <p>Recibe alertas personalizadas cuando encontramos empleos que coinciden perfectamente con tu
+                        perfil y aspiraciones.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Análisis de Mercado</h3>
+                    <p>Accede a datos en tiempo real sobre tendencias de empleo, salarios y demandas del mercado
+                        laboral.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Seguridad LFPDPPP</h3>
+                    <p>Tus datos están protegidos con los más altos estándares de seguridad y cumplimiento regulatorio.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Colocación Rápida</h3>
+                    <p>Reduce significativamente el tiempo de búsqueda de empleo con nuestro sistema de matching
+                        optimizado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>¿Cómo Funciona?</h2>
+                <p>Tres pasos simples para encontrar tu empleo ideal</p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3>Crea tu Perfil</h3>
+                    <p>Sube tu currículum y completa tu información académica. Nuestro sistema analiza automáticamente
+                        tus habilidades.</p>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3>Análisis Inteligente</h3>
+                    <p>Nuestros modelos IA procesan tu información y calculan tu compatibilidad con cientos de
+                        oportunidades.</p>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>Oportunidades Personalizadas</h3>
+                    <p>Recibe recomendaciones de empleo perfectas para ti y solicita directamente desde nuestra
+                        plataforma.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Who Section -->
+    <section class="for-who" id="for-who">
+        <div class="container">
+            <div class="section-header">
+                <h2>Para Quién es MoirAI</h2>
+                <p>Una solución completa para todos los actores del mercado laboral</p>
+            </div>
+            <div class="audience-grid">
+                <div class="audience-card">
+                    <div class="audience-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Estudiantes UNRC</h3>
+                    <p>Accede a miles de oportunidades laborales adaptadas a tu perfil académico y proyectos
+                        completados.</p>
+                    <ul class="benefits-list">
+                        <li><i class="fas fa-check"></i> Búsqueda inteligente</li>
+                        <li><i class="fas fa-check"></i> Matching automático</li>
+                        <li><i class="fas fa-check"></i> Alertas personalizadas</li>
+                        <li><i class="fas fa-check"></i> Seguimiento de aplicaciones</li>
+                    </ul>
+                </div>
+                <div class="audience-card featured">
+                    <div class="badge">Popular</div>
+                    <div class="audience-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3>Empresas Colaboradoras</h3>
+                    <p>Encuentra los candidatos más calificados automáticamente, ahorrando tiempo y recursos en la
+                        búsqueda.</p>
+                    <ul class="benefits-list">
+                        <li><i class="fas fa-check"></i> Filtros avanzados</li>
+                        <li><i class="fas fa-check"></i> Análisis de candidatos</li>
+                        <li><i class="fas fa-check"></i> Publicación de vacantes</li>
+                        <li><i class="fas fa-check"></i> Seguimiento de candidatos</li>
+                    </ul>
+                </div>
+                <div class="audience-card">
+                    <div class="audience-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Administradores</h3>
+                    <p>Gestiona la plataforma completa con dashboards avanzados, análisis de KPIs y auditoría integrada.
+                    </p>
+                    <ul class="benefits-list">
+                        <li><i class="fas fa-check"></i> Gestión de usuarios</li>
+                        <li><i class="fas fa-check"></i> Análisis de KPIs</li>
+                        <li><i class="fas fa-check"></i> Auditoría completa</li>
+                        <li><i class="fas fa-check"></i> Control de permisos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>Historias de Éxito</h2>
+                <p>Conoce cómo MoirAI ha transformado las carreras de nuestros usuarios</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"MoirAI me ayudó a encontrar mi primer empleo en solo dos semanas. El matching fue increíblemente
+                        preciso y relevante para mis habilidades."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">AC</div>
+                        <div>
+                            <h4>Ana Carrillo</h4>
+                            <p>Ingeniera de Sistemas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"Como empresa, reducimos nuestro tiempo de reclutamiento en 70%. El sistema identifica candidatos
+                        cualificados automáticamente."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">JR</div>
+                        <div>
+                            <h4>Jorge Rodríguez</h4>
+                            <p>Manager de RRHH</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"La plataforma es muy intuitiva y las notificaciones me ayudaron a no perder ninguna oportunidad.
+                        Excelente herramienta para estudiantes."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MB</div>
+                        <div>
+                            <h4>María Bernal</h4>
+                            <p>Desarrolladora Frontend</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>¿Listo para transformar tu carrera?</h2>
+            <p>Únete a cientos de estudiantes que ya encontraron sus empleos ideales con MoirAI</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary btn-lg" onclick="scrollToRegister()">Registrarse Gratis</button>
+                <button class="btn btn-secondary btn-lg" onclick="window.open('https://docs.moirai.com', '_blank')">Ver
+                    Documentación</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Contacto</h2>
+                <p>¿Tienes preguntas? Nos encantaría ayudarte</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:contacto@moirai.com">contacto@moirai.com</a></p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Ubicación</h4>
+                            <p>UNRC, Rosario Castellanos, México</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Teléfono</h4>
+                            <p><a href="tel:+525551234567">+52 (555) 123-4567</a></p>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+                <form class="contact-form">
+                    <div class="form-group">
+                        <input type="text" placeholder="Tu nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" placeholder="Tu correo" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Tu mensaje" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">Enviar Mensaje</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>MoirAI</h4>
+                    <p>Plataforma inteligente de matching laboral para estudiantes de UNRC.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Producto</h4>
+                    <ul>
+                        <li><a href="#">Características</a></li>
+                        <li><a href="#">Precios</a></li>
+                        <li><a href="#">Seguridad</a></li>
+                        <li><a href="#">Actualizaciones</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Compañía</h4>
+                    <ul>
+                        <li><a href="#">Acerca de</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careras</a></li>
+                        <li><a href="#">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacidad</a></li>
+                        <li><a href="#">Términos</a></li>
+                        <li><a href="#">Cookies</a></li>
+                        <li><a href="#">LFPDPPP</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MoirAI. Todos los derechos reservados. Desarrollado con ❤️ por UNRC</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Demo Modal -->
+    <div id="demo-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Ver Demo en Video</h2>
+            <div class="video-container">
+                <iframe width="100%" height="500" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0"
+                    allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content register-modal">
+            <span class="close-modal">&times;</span>
+            <h2>Únete a MoirAI</h2>
+            
+            <!-- Role Tabs -->
+            <div class="register-tabs">
+                <button class="register-tab active" data-tab="student">Estudiante</button>
+                <button class="register-tab" data-tab="company">Empresa</button>
+            </div>
+            
+            <form class="register-form" id="landing-register-form">
+                <!-- Rol oculto (se establece desde los tabs) -->
+                <input type="hidden" name="role" value="student">
+                
+                <!-- Campos Comunes -->
+                <div class="form-group">
+                    <label for="landing-reg-name">Nombre Completo</label>
+                    <input type="text" id="landing-reg-name" name="name" placeholder="Ej: Juan Pérez" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="landing-reg-email">Correo Electrónico</label>
+                    <input type="email" id="landing-reg-email" name="email" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="landing-reg-password">Contraseña</label>
+                    <div class="password-input-group">
+                        <input type="password" id="landing-reg-password" name="password" placeholder="Mínimo 8 caracteres" required>
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Campos Condicionales por Rol -->
+                <div class="form-group" id="student-program" style="display: block;">
+                    <label for="landing-reg-program">Programa de Estudio</label>
+                    <input type="text" id="landing-reg-program" name="program" placeholder="Ej: Ingeniería en Sistemas">
+                </div>
+                
+                <div class="form-group" id="company-industry" style="display: none;">
+                    <label for="landing-reg-industry">Industria</label>
+                    <input type="text" id="landing-reg-industry" name="industry" placeholder="Ej: Tecnología, Finanzas">
+                </div>
+                
+                <div class="form-group" id="company-size" style="display: none;">
+                    <label for="landing-reg-size">Tamaño de Empresa</label>
+                    <select id="landing-reg-size" name="company_size">
+                        <option value="">Selecciona tamaño</option>
+                        <option value="startup">Startup (1-10)</option>
+                        <option value="small">Pequeña (11-50)</option>
+                        <option value="medium">Mediana (51-500)</option>
+                        <option value="large">Grande (500+)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="company-location" style="display: none;">
+                    <label for="landing-reg-location">Ubicación</label>
+                    <input type="text" id="landing-reg-location" name="location" placeholder="Ej: Ciudad, País">
+                </div>
+                
+                <!-- Términos y Condiciones -->
+                <div class="form-group">
+                    <label class="checkbox">
+                        <input type="checkbox" name="terms" required>
+                        <span>Acepto los <a href="#" target="_blank">términos y condiciones</a></span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Crear Cuenta Gratis</button>
+            </form>
+            
+            <p class="register-footer">¿Ya tienes cuenta? <a href="#" onclick="scrollToLogin(); return false;">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content login-modal">
+            <span class="close-modal">&times;</span>
+            <h2>Inicia Sesión</h2>
+            <form class="login-form">
+                <div class="form-group">
+                    <input type="email" placeholder="Correo electrónico" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Contraseña" required>
+                </div>
+                <div class="form-group remember">
+                    <label class="checkbox">
+                        <input type="checkbox">
+                        <span>Recuérdame</span>
+                    </label>
+                    <a href="#">¿Olvidaste tu contraseña?</a>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+            </form>
+            <div class="divider">o</div>
+            <button class="btn btn-social">
+                <i class="fab fa-google"></i> Continuar con Google
+            </button>
+            <p class="register-footer">¿No tienes cuenta? <a href="#" onclick="scrollToRegister()">Regístrate aquí</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="/static/js/utils/storage-manager.js"></script>
+    <script src="/static/js/navbar-manager.js"></script>
+    <script src="/static/js/main.js"></script>
+    <!-- Automated Navigation & Console Capture System -->
+    <script src="/static/js/navigation-console-capture.js"></script>
+</body>
+
+</html>

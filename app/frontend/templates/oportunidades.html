@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Oportunidades de empleo en MoirAI">
+    <title>Oportunidades - MoirAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navbar - Generado dinámicamente por navbar-manager.js -->
+    <nav class="navbar" id="navbar-container">
+        <!-- Contenido insertado por JavaScript -->
+    </nav>
+
+    <!-- Header Section -->
+    <section class="listing-header">
+        <div class="listing-header-content">
+            <h1>Oportunidades de Empleo</h1>
+            <p>Encuentra las mejores oportunidades laborales diseñadas para ti</p>
+            <div class="listing-search-bar">
+                <input type="text" id="searchJobs" placeholder="Busca por título, empresa o skill..."
+                    class="search-input">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <div class="listing-container">
+        <!-- Sidebar con Filtros - Adaptado a modelo JobPosition -->
+        <aside class="listing-sidebar">
+            <div class="filter-section">
+                <h3 class="filter-title">
+                    <i class="fas fa-filter"></i> Filtros
+                    <button class="clear-filters-btn" onclick="clearAllFilters()">Limpiar</button>
+                </h3>
+
+                <!-- Ubicación (location field) -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-map-marker-alt"></i> Ubicación
+                    </label>
+                    <input type="text" id="locationFilter" class="filter-input" placeholder="Buscar ubicación...">
+                </div>
+
+                <!-- Tipo de Trabajo (job_type field) -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-briefcase"></i> Tipo de Contrato
+                    </label>
+                    <select id="jobTypeFilter" class="filter-select">
+                        <option value="">Todos los tipos</option>
+                        <option value="full-time">Tiempo Completo</option>
+                        <option value="part-time">Tiempo Parcial</option>
+                        <option value="contract">Contratista</option>
+                        <option value="freelance">Freelance</option>
+                        <option value="internship">Pasantía</option>
+                    </select>
+                </div>
+
+                <!-- Modalidad de Trabajo (work_mode field) -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-laptop-house"></i> Modalidad
+                    </label>
+                    <div class="filter-checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="presencial" class="modality-filter"> Presencial
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="hibrido" class="modality-filter"> Híbrido
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="remoto" class="modality-filter"> Remoto
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Nivel de Experiencia (experience_level field) -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-chart-line"></i> Nivel de Experiencia
+                    </label>
+                    <div class="filter-checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="junior" class="level-filter"> Junior
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="semi-senior" class="level-filter"> Semi-Senior
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="senior" class="level-filter"> Senior
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="lead" class="level-filter"> Lead/Management
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Habilidades Técnicas (skills field - JSON) -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-code"></i> Habilidades Técnicas
+                    </label>
+                    <div class="filter-checkbox-group">
+                        <!-- Backend -->
+                        <optgroup label="Backend">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="python" class="skill-filter"> Python
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="nodejs" class="skill-filter"> Node.js
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="java" class="skill-filter"> Java
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="csharp" class="skill-filter"> C#/.NET
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="golang" class="skill-filter"> Go
+                            </label>
+                        </optgroup>
+                        <!-- Frontend -->
+                        <optgroup label="Frontend">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="javascript" class="skill-filter"> JavaScript
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="react" class="skill-filter"> React
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="vue" class="skill-filter"> Vue.js
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="angular" class="skill-filter"> Angular
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="typescript" class="skill-filter"> TypeScript
+                            </label>
+                        </optgroup>
+                        <!-- Datos -->
+                        <optgroup label="Datos">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="sql" class="skill-filter"> SQL
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="nosql" class="skill-filter"> NoSQL
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="bigdata" class="skill-filter"> Big Data
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="machinelearning" class="skill-filter"> Machine Learning
+                            </label>
+                        </optgroup>
+                        <!-- DevOps -->
+                        <optgroup label="DevOps">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="docker" class="skill-filter"> Docker
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="kubernetes" class="skill-filter"> Kubernetes
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="aws" class="skill-filter"> AWS
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="cicd" class="skill-filter"> CI/CD
+                            </label>
+                        </optgroup>
+                    </div>
+                </div>
+
+                <!-- Ordenamiento -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-sort"></i> Ordenar por
+                    </label>
+                    <select id="sortFilter" class="filter-select">
+                        <option value="recent">Más Reciente</option>
+                        <option value="match">Mejor Coincidencia</option>
+                        <option value="salary-high">Mayor Salario</option>
+                        <option value="salary-low">Menor Salario</option>
+                    </select>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="listing-main">
+            <!-- Sorting and View Options -->
+            <div class="listing-controls">
+                <div class="results-info">
+                    <span id="jobCount">12</span> oportunidades encontradas
+                </div>
+                <div class="sort-options">
+                    <label>Ordenar por:</label>
+                    <select id="sortFilter" class="sort-select">
+                        <option value="recent">Más Reciente</option>
+                        <option value="match">Mejor Match</option>
+                        <option value="salary-high">Mayor Salario</option>
+                        <option value="salary-low">Menor Salario</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Job Cards Grid -->
+            <div class="jobs-container" id="jobsContainer">
+                <!-- Job cards populated by JavaScript -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="pagination-btn" onclick="previousPage()">
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <div class="pagination-numbers" id="paginationNumbers">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <button class="pagination-btn" onclick="nextPage()">
+                    Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>MoirAI</h4>
+                    <p>Plataforma inteligente de matching laboral para estudiantes de UNRC.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Producto</h4>
+                    <ul>
+                        <li><a href="#">Características</a></li>
+                        <li><a href="#">Precios</a></li>
+                        <li><a href="#">Seguridad</a></li>
+                        <li><a href="#">Actualizaciones</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Compañía</h4>
+                    <ul>
+                        <li><a href="#">Acerca de</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careras</a></li>
+                        <li><a href="#">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacidad</a></li>
+                        <li><a href="#">Términos</a></li>
+                        <li><a href="#">Cookies</a></li>
+                        <li><a href="#">LFPDPPP</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MoirAI. Todos los derechos reservados. Desarrollado con ❤️ por UNRC</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Config -->
+    <script>
+        // ✅ CORRECCIÓN: Detectar dinámicamente la URL base desde el navegador
+        const protocol = window.location.protocol
+        const hostname = window.location.hostname
+        const port = window.location.port
+        const origin = port ? `${protocol}//${hostname}:${port}` : `${protocol}//${hostname}`
+        window.API_BASE_URL = `${origin}/api/v1`
+        console.log('🔗 API Base URL:', window.API_BASE_URL)
+    </script>
+
+    <!-- Scripts -->
+    <script src="/static/js/api-client.js"></script>
+    <script src="/static/js/utils/storage-manager.js"></script>
+    <script src="/static/js/auth-manager.js"></script>
+    <script src="/static/js/notification-manager.js"></script>
+    <script src="/static/js/utils/form-validator.js"></script>
+    <script src="/static/js/protected-page-manager.js"></script>
+    <script src="/static/js/navbar-manager.js"></script>
+    <script src="/static/js/services/background-job-search.js"></script>
+    <script src="/static/js/pages/jobs-search.js"></script>
+</body>
+
+</html>

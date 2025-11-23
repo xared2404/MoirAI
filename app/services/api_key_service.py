@@ -1,13 +1,15 @@
 """
-Servicio para gestión dinámica de API Keys
+Servicio para gestión dinámica de API Keys (ASYNC)
 Genera, valida y gestiona claves de API para usuarios autenticados
+Completamente asincrónico con AsyncSession
 """
 import secrets
 import hashlib
 import json
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
-from sqlmodel import Session, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select
 
 from app.models import ApiKey, Student, Company
 from app.schemas import ApiKeyCreate, ApiKeyResponse, ApiKeyCreatedResponse
@@ -54,8 +56,9 @@ class ApiKeyService:
         Returns: (full_key, key_id, key_hash)
         """
         # Generar componentes
-        key_id = secrets.token_urlsafe(16)  # Identificador público
-        secret_part = secrets.token_urlsafe(32)  # Parte secreta
+        # Usar '-' como separador en lugar de '_' para evitar conflictos en parsing
+        key_id = secrets.token_urlsafe(16).replace('_', '-')  # Asegurar que NO contiene '_'
+        secret_part = secrets.token_urlsafe(32)
         
         # Clave completa: keyid_secret
         full_key = f"{key_id}_{secret_part}"
@@ -66,14 +69,14 @@ class ApiKeyService:
         return full_key, key_id, key_hash
     
     @staticmethod
-    def create_api_key(
-        session: Session,
+    async def create_api_key(
+        session: AsyncSession,
         user_id: int,
         user_type: str,
         user_email: str,
         key_data: ApiKeyCreate
     ) -> ApiKeyCreatedResponse:
-        """Crear nueva API key para usuario"""
+        """Crear nueva API key para usuario - ASYNC"""
         
         # Generar clave
         full_key, key_id, key_hash = ApiKeyService.generate_api_key()
@@ -107,8 +110,8 @@ class ApiKeyService:
         )
         
         session.add(api_key)
-        session.commit()
-        session.refresh(api_key)
+        await session.commit()
+        await session.refresh(api_key)
         
         # Preparar respuesta
         key_info = ApiKeyResponse(
@@ -131,24 +134,28 @@ class ApiKeyService:
         )
     
     @staticmethod
-    def validate_api_key(session: Session, api_key: str) -> Optional[Dict[str, Any]]:
+    async def validate_api_key(session: AsyncSession, api_key: str) -> Optional[Dict[str, Any]]:
         """
-        Validar API key y retornar información del usuario
+        Validar API key y retornar información del usuario - ASYNC
         Returns: None si inválida, dict con info del usuario si válida
         """
         if not api_key or "_" not in api_key:
             return None
         
-        # Extraer key_id
+        # Extraer key_id (parte antes del primer '_')
         key_id = api_key.split("_")[0]
         
         # Buscar en BD
-        db_key = session.exec(
+        from sqlalchemy import and_
+        result = await session.execute(
             select(ApiKey).where(
-                ApiKey.key_id == key_id,
-                ApiKey.is_active == True
+                and_(
+                    ApiKey.key_id == key_id,
+                    ApiKey.is_active == True
+                )
             )
-        ).first()
+        )
+        db_key = result.scalars().first()
         
         if not db_key:
             return None
@@ -166,7 +173,7 @@ class ApiKeyService:
         db_key.last_used_at = datetime.utcnow()
         db_key.usage_count += 1
         session.add(db_key)
-        session.commit()
+        await session.commit()
         
         # Retornar información del usuario
         return {
@@ -179,14 +186,18 @@ class ApiKeyService:
         }
     
     @staticmethod
-    def get_user_api_keys(session: Session, user_id: int, user_type: str) -> List[ApiKeyResponse]:
-        """Obtener todas las API keys de un usuario"""
-        keys = session.exec(
+    async def get_user_api_keys(session: AsyncSession, user_id: int, user_type: str) -> List[ApiKeyResponse]:
+        """Obtener todas las API keys de un usuario - ASYNC"""
+        from sqlalchemy import and_
+        result = await session.execute(
             select(ApiKey).where(
-                ApiKey.user_id == user_id,
-                ApiKey.user_type == user_type
+                and_(
+                    ApiKey.user_id == user_id,
+                    ApiKey.user_type == user_type
+                )
             ).order_by(ApiKey.created_at.desc())
-        ).all()
+        )
+        keys = result.scalars().all()
         
         return [
             ApiKeyResponse(
@@ -206,14 +217,18 @@ class ApiKeyService:
         ]
     
     @staticmethod
-    def revoke_api_key(session: Session, key_id: str, user_id: int) -> bool:
-        """Revocar una API key específica"""
-        api_key = session.exec(
+    async def revoke_api_key(session: AsyncSession, key_id: str, user_id: int) -> bool:
+        """Revocar una API key específica - ASYNC"""
+        from sqlalchemy import and_
+        result = await session.execute(
             select(ApiKey).where(
-                ApiKey.key_id == key_id,
-                ApiKey.user_id == user_id
+                and_(
+                    ApiKey.key_id == key_id,
+                    ApiKey.user_id == user_id
+                )
             )
-        ).first()
+        )
+        api_key = result.scalars().first()
         
         if not api_key:
             return False
@@ -221,19 +236,23 @@ class ApiKeyService:
         api_key.is_active = False
         api_key.updated_at = datetime.utcnow()
         session.add(api_key)
-        session.commit()
+        await session.commit()
         
         return True
     
     @staticmethod
-    def cleanup_expired_keys(session: Session) -> int:
-        """Limpiar claves expiradas (tarea de mantenimiento)"""
-        expired_keys = session.exec(
+    async def cleanup_expired_keys(session: AsyncSession) -> int:
+        """Limpiar claves expiradas (tarea de mantenimiento) - ASYNC"""
+        from sqlalchemy import and_
+        result = await session.execute(
             select(ApiKey).where(
-                ApiKey.expires_at < datetime.utcnow(),
-                ApiKey.is_active == True
+                and_(
+                    ApiKey.expires_at < datetime.utcnow(),
+                    ApiKey.is_active == True
+                )
             )
-        ).all()
+        )
+        expired_keys = result.scalars().all()
         
         count = 0
         for key in expired_keys:
@@ -242,7 +261,7 @@ class ApiKeyService:
             session.add(key)
             count += 1
         
-        session.commit()
+        await session.commit()
         return count
 
 

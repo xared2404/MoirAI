@@ -1,17 +1,18 @@
 """
-Servicios de matchmaking entre estudiantes y oportunidades laborales
+Servicios de matchmaking entre estudiantes y oportunidades laborales (ASYNC)
 Algoritmos de compatibilidad y recomendación
+Completamente asincrónico con AsyncSession
 """
 from typing import List, Dict, Tuple, Optional
 import json
 from datetime import datetime, timedelta
-from sqlmodel import Session, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import select
 
 from app.models import Student, JobMatchEvent
 from app.schemas import JobItem, MatchResult, StudentPublic, MatchingCriteria
-from app.services.nlp_service import nlp_service
+from app.services.text_vectorization_service import text_vectorization_service
 from app.providers import job_provider_manager
-from app.core.database import engine
 
 
 class MatchingService:
@@ -19,12 +20,73 @@ class MatchingService:
     
     def __init__(self):
         self.min_match_score = 0.1  # Puntuación mínima para considerar match
-        self.boost_factors = {
-            "location": 0.1,      # Boost por coincidencia de ubicación
-            "recent_activity": 0.05,  # Boost por actividad reciente del estudiante
-            "project_relevance": 0.15,  # Boost por relevancia de proyectos
-            "skill_diversity": 0.1     # Boost por diversidad de habilidades
+    
+    def calculate_match_score(
+        self,
+        student_skills: List[str],
+        student_projects: List[str],
+        job_description: str,
+        weights: Dict[str, float] = None
+    ) -> Tuple[float, Dict]:
+        """
+        Calcular score de compatibilidad entre ESTUDIANTE y OFERTA DE TRABAJO.
+        
+        ✅ RESPONSABILIDAD CORRECTA: Aquí va la LÓGICA DE NEGOCIO
+        (pesos, heurísticas, políticas).
+        
+        La función matemática pura (get_similarity) vive en text_vectorization_service.
+        Esta función APLICA POLÍTICAS sobre esa función.
+        
+        Args:
+            student_skills: Lista de habilidades del estudiante
+            student_projects: Lista de proyectos/experiencias
+            job_description: Descripción de la oferta
+            weights: Dict opcional para pesos personalizados
+            
+        Returns:
+            Tupla (score: float [0-1], details: dict)
+        """
+        # POLÍTICA #1: Pesos por defecto (35% skills, 65% projects)
+        w = weights or {"skills": 0.35, "projects": 0.65}
+        
+        # POLÍTICA #2: Aumentar peso de projects si hay muchos
+        # (Heurística: más experiencia proyectos → más relevante)
+        num_projects = len([p for p in (student_projects or []) if p])
+        if num_projects >= 3:
+            w = w.copy()
+            w["projects"] += 0.10
+            w["skills"] = max(0, w.get("skills", 0) - 0.10)
+        
+        # Normalizar pesos para que sumen 1.0
+        total_weight = max(1e-9, w.get("skills", 0) + w.get("projects", 0))
+        w_normalized = {
+            "skills": w.get("skills", 0) / total_weight,
+            "projects": w.get("projects", 0) / total_weight
         }
+        
+        # Usar función MATEMÁTICA PURA de text_vectorization_service
+        skills_text = " ".join([str(s).strip() for s in (student_skills or []) if s])
+        projects_text = " ".join([str(p).strip() for p in (student_projects or []) if p])
+        job_clean = str(job_description or "")[:50000]
+        
+        # Calcular similitud TF-IDF (función pura, sin negocio)
+        skill_similarity = text_vectorization_service.get_similarity(skills_text, job_clean) if skills_text else 0.0
+        project_similarity = text_vectorization_service.get_similarity(projects_text, job_clean) if projects_text else 0.0
+        
+        # Aplicar pesos (LÓGICA DE NEGOCIO)
+        base_score = (skill_similarity * w_normalized["skills"]) + (project_similarity * w_normalized["projects"])
+        base_score = max(0.0, min(base_score, 1.0))
+        
+        # Retornar con detalles para auditoría
+        details = {
+            "skill_similarity": round(float(skill_similarity), 6),
+            "project_similarity": round(float(project_similarity), 6),
+            "weights_used": w_normalized,
+            "matching_skills": list(set([s for s in (student_skills or []) if s])),  # Unique
+            "matching_projects": list(set([p for p in (student_projects or []) if p]))  # Unique
+        }
+        
+        return base_score, details
     
     def build_student_query(self, student: Student) -> str:
         """Construir query de búsqueda basada en el perfil del estudiante"""
@@ -73,229 +135,212 @@ class MatchingService:
         
         return found_keywords[:3]  # Max 3 keywords
     
-    async def find_job_recommendations(self, student_id: int, 
+    async def find_job_recommendations(self, session: AsyncSession, student_id: int, 
                                      location: Optional[str] = None,
                                      limit: int = 10) -> Dict[str, any]:
-        """Encontrar recomendaciones de trabajos para un estudiante"""
-        with Session(engine) as session:
-            student = session.get(Student, student_id)
-            if not student:
-                raise ValueError(f"Estudiante con ID {student_id} no encontrado")
-            
-            # Construir query de búsqueda
-            search_query = self.build_student_query(student)
-            
-            # Buscar trabajos usando los proveedores
-            raw_jobs = await job_provider_manager.search_all_providers(
-                query=search_query,
-                location=location,
-                limit_per_provider=limit
-            )
-            
-            # Calcular scores de matching
-            scored_jobs = []
-            for job in raw_jobs:
-                score, details = self._calculate_job_match_score(student, job)
-                if score >= self.min_match_score:
-                    job.match_score = round(score, 3)
-                    scored_jobs.append((job, score, details))
-            
-            # Ordenar por score descendente
-            scored_jobs.sort(key=lambda x: x[1], reverse=True)
-            
-            # Tomar los mejores matches
-            best_jobs = [job for job, score, details in scored_jobs[:limit]]
-            
-            # Registrar evento de matching
-            match_event = JobMatchEvent(
-                student_id=student_id,
-                query=search_query,
-                num_results=len(best_jobs),
-                source="internal_matching"
-            )
-            session.add(match_event)
-            session.commit()
-            
-            return {
-                "student_id": student_id,
-                "jobs": best_jobs,
-                "total_found": len(raw_jobs),
-                "matches_found": len(best_jobs),
-                "query_used": search_query,
-                "generated_at": datetime.utcnow()
-            }
+        """Encontrar recomendaciones de trabajos para un estudiante - ASYNC"""
+        result = await session.execute(select(Student).where(Student.id == student_id))
+        student = result.scalars().first()
+        
+        if not student:
+            raise ValueError(f"Estudiante con ID {student_id} no encontrado")
+        
+        # Construir query de búsqueda
+        search_query = self.build_student_query(student)
+        
+        # Buscar trabajos usando los proveedores
+        raw_jobs = await job_provider_manager.search_all_providers(
+            query=search_query,
+            location=location,
+            limit_per_provider=limit
+        )
+        
+        # Calcular scores de matching
+        scored_jobs = []
+        for job in raw_jobs:
+            score, details = self._calculate_job_match_score(student, job)
+            if score >= self.min_match_score:
+                job.match_score = round(score, 3)
+                scored_jobs.append((job, score, details))
+        
+        # Ordenar por score descendente
+        scored_jobs.sort(key=lambda x: x[1], reverse=True)
+        
+        # Tomar los mejores matches
+        best_jobs = [job for job, score, details in scored_jobs[:limit]]
+        
+        # Registrar evento de matching
+        match_event = JobMatchEvent(
+            student_id=student_id,
+            query=search_query,
+            num_results=len(best_jobs),
+            source="internal_matching"
+        )
+        session.add(match_event)
+        await session.commit()
+        
+        return {
+            "student_id": student_id,
+            "jobs": best_jobs,
+            "total_found": len(raw_jobs),
+            "matches_found": len(best_jobs),
+            "query_used": search_query,
+            "generated_at": datetime.utcnow()
+        }
     
     def _calculate_job_match_score(self, student: Student, job: JobItem) -> Tuple[float, Dict]:
-        """Calcular score de compatibilidad entre estudiante y trabajo"""
+        """
+        Calcular score de compatibilidad entre estudiante y trabajo.
+        
+        SIMPLIFICADO: Solo usa TF-IDF matching sin boosts fringe.
+        
+        Algoritmo:
+        1. Extrae skills y projects del estudiante
+        2. Calcula similitud TF-IDF: skills vs job description
+        3. Calcula similitud TF-IDF: projects vs job description
+        4. Combina con pesos dinámicos (skills 35%, projects 65%)
+        5. Retorna score final [0..1]
+        
+        Returns:
+            (final_score, details) donde details contiene:
+            - skill_similarity: similaridad TF-IDF de skills
+            - project_similarity: similaridad TF-IDF de projects
+            - matching_skills: skills que aparecen textuales en job description
+            - matching_projects: projects que aparecen textuales en job description
+            - weights_used: pesos usados para combinar
+        """
         student_skills = json.loads(student.skills or "[]")
         student_projects = json.loads(student.projects or "[]")
         
-        # --- Nuevo: definir pesos para nlp_service, priorizando proyectos (experiencia)
-        # Pesos base: projects tiene mayor importancia (experiencia)
+        # --- Pesos dinámicos: ajustar según cantidad de proyectos
+        # Lógica: projects = experiencia práctica (más importante)
         weights = {"skills": 0.35, "projects": 0.65}
-        # Ajuste dinámico: si el estudiante tiene muchos proyectos, aumentar peso de projects
+        
+        # Aumentar peso de projects si el estudiante tiene muchos
         num_projects = len([p for p in student_projects if p])
         if num_projects >= 3:
             weights["projects"] += 0.10
             weights["skills"] -= 0.10
-        # Normalizar por si acaso
+        
+        # Normalizar para que sumen 1.0
         total_w = weights["skills"] + weights["projects"]
         if total_w > 0:
             weights["skills"] /= total_w
             weights["projects"] /= total_w
-
-        # Usar el servicio NLP para calcular score base (pasa los pesos)
+        
+        # Usar el nuevo calculate_match_score de esta clase (con lógica de negocio)
         job_description = f"{job.title} {job.description or ''}"
-        base_score, match_details = nlp_service.calculate_match_score(
+        base_score, match_details = self.calculate_match_score(
             student_skills, student_projects, job_description, weights=weights
         )
         
-        # Aplicar factores de boost
-        total_boost = 0.0
-        boost_details = {}
-        
-        # Boost por ubicación
-        if (job.location and student.program and 
-            any(city in job.location.lower() for city in ["córdoba", "cordoba"])):
-            location_boost = self.boost_factors["location"]
-            total_boost += location_boost
-            boost_details["location"] = location_boost
-        
-        # Boost por actividad reciente
-        if student.last_active:
-            days_since_active = (datetime.utcnow() - student.last_active).days
-            if days_since_active <= 7:  # Activo en los últimos 7 días
-                activity_boost = self.boost_factors["recent_activity"]
-                total_boost += activity_boost
-                boost_details["recent_activity"] = activity_boost
-        
-        # Boost por relevancia de proyectos
-        if len(match_details.get("matching_projects", [])) >= 2:
-            project_boost = self.boost_factors["project_relevance"]
-            total_boost += project_boost
-            boost_details["project_relevance"] = project_boost
-        
-        # Boost por diversidad de habilidades
-        if len(student_skills) >= 8:
-            diversity_boost = self.boost_factors["skill_diversity"]
-            total_boost += diversity_boost
-            boost_details["skill_diversity"] = diversity_boost
-        
-        final_score = min(base_score + total_boost, 1.0)
-        
-        return final_score, {
-            **match_details,
-            "base_score": base_score,
-            "weights_used_for_nlp": weights,
-            "boost_applied": total_boost,
-            "boost_details": boost_details,
-            "final_score": final_score
-        }
+        # Retornar score directo sin boosts adicionales
+        return base_score, match_details
     
-    def filter_students_by_criteria(self, criteria: MatchingCriteria) -> List[MatchResult]:
-        """Filtrar estudiantes basado en criterios específicos"""
-        with Session(engine) as session:
-            # Obtener todos los estudiantes activos
-            students = session.exec(
-                select(Student).where(Student.is_active == True)
-            ).all()
+    async def filter_students_by_criteria(self, session: AsyncSession, criteria: MatchingCriteria) -> List[MatchResult]:
+        """Filtrar estudiantes basado en criterios específicos - ASYNC"""
+        # Obtener todos los estudiantes activos
+        result = await session.execute(
+            select(Student).where(Student.is_active == True)
+        )
+        students = result.scalars().all()
+        
+        matched_students = []
+        
+        for student in students:
+            student_skills = json.loads(student.skills or "[]")
+            student_projects = json.loads(student.projects or "[]")
             
-            matched_students = []
+            # Verificar criterios de skills
+            if criteria.skills:
+                required_skills = [s.lower() for s in criteria.skills]
+                student_skills_lower = [s.lower() for s in student_skills]
+                
+                matching_skills = [
+                    skill for skill in required_skills
+                    if any(req_skill in skill for req_skill in student_skills_lower)
+                ]
+                
+                if len(matching_skills) < len(required_skills) * 0.5:  # Al menos 50% match
+                    continue
+            else:
+                matching_skills = []
             
-            for student in students:
-                student_skills = json.loads(student.skills or "[]")
-                student_projects = json.loads(student.projects or "[]")
+            # Verificar criterios de proyectos
+            if criteria.projects:
+                required_projects = [p.lower() for p in criteria.projects]
+                student_projects_lower = [p.lower() for p in student_projects]
                 
-                # Verificar criterios de skills
-                if criteria.skills:
-                    required_skills = [s.lower() for s in criteria.skills]
-                    student_skills_lower = [s.lower() for s in student_skills]
-                    
-                    matching_skills = [
-                        skill for skill in required_skills
-                        if any(req_skill in skill for req_skill in student_skills_lower)
-                    ]
-                    
-                    if len(matching_skills) < len(required_skills) * 0.5:  # Al menos 50% match
-                        continue
-                else:
-                    matching_skills = []
+                matching_projects = []
+                for req_proj in required_projects:
+                    for stud_proj in student_projects_lower:
+                        if req_proj in stud_proj:
+                            matching_projects.append(stud_proj)
+                            break
                 
-                # Verificar criterios de proyectos
-                if criteria.projects:
-                    required_projects = [p.lower() for p in criteria.projects]
-                    student_projects_lower = [p.lower() for p in student_projects]
-                    
-                    matching_projects = []
-                    for req_proj in required_projects:
-                        for stud_proj in student_projects_lower:
-                            if req_proj in stud_proj:
-                                matching_projects.append(stud_proj)
-                                break
-                    
-                    if len(matching_projects) == 0:
-                        continue
-                else:
-                    matching_projects = []
-                
-                # Calcular score basado en matches
-                skill_score = len(matching_skills) / max(len(criteria.skills or []), 1)
-                project_score = len(matching_projects) / max(len(criteria.projects or []), 1)
-                final_score = (skill_score * 0.7) + (project_score * 0.3)
-                
-                # Crear resultado de match
-                student_public = StudentPublic(
-                    id=student.id,
-                    name=student.name,
-                    program=student.program,
-                    skills=student_skills,
-                    soft_skills=json.loads(student.soft_skills or "[]"),
-                    projects=student_projects
-                )
-                
-                match_result = MatchResult(
-                    student=student_public,
-                    score=round(final_score, 3),
-                    matching_skills=matching_skills,
-                    matching_projects=matching_projects
-                )
-                
-                matched_students.append(match_result)
+                if len(matching_projects) == 0:
+                    continue
+            else:
+                matching_projects = []
             
-            # Ordenar por score descendente
-            matched_students.sort(key=lambda x: x.score, reverse=True)
+            # Calcular score basado en matches
+            skill_score = len(matching_skills) / max(len(criteria.skills or []), 1)
+            project_score = len(matching_projects) / max(len(criteria.projects or []), 1)
+            final_score = (skill_score * 0.7) + (project_score * 0.3)
             
-            return matched_students
+            # Crear resultado de match
+            student_public = StudentPublic(
+                id=student.id,
+                name=student.name,
+                program=student.program,
+                skills=student_skills,
+                soft_skills=json.loads(student.soft_skills or "[]"),
+                projects=student_projects
+            )
+            
+            match_result = MatchResult(
+                student=student_public,
+                score=round(final_score, 3),
+                matching_skills=matching_skills,
+                matching_projects=matching_projects
+            )
+            
+            matched_students.append(match_result)
+        
+        # Ordenar por score descendente
+        matched_students.sort(key=lambda x: x.score, reverse=True)
+        
+        return matched_students
     
-    def get_featured_students(self, limit: int = 10) -> List[StudentPublic]:
-        """Obtener estudiantes destacados basado en métricas de calidad"""
-        with Session(engine) as session:
-            students = session.exec(
-                select(Student).where(Student.is_active == True)
-            ).all()
-            
-            scored_students = []
-            
-            for student in students:
-                score = self._calculate_student_featured_score(student)
-                scored_students.append((student, score))
-            
-            # Ordenar por score y tomar los mejores
-            scored_students.sort(key=lambda x: x[1], reverse=True)
-            
-            featured = []
-            for student, score in scored_students[:limit]:
-                student_public = StudentPublic(
-                    id=student.id,
-                    name=student.name,
-                    program=student.program,
-                    skills=json.loads(student.skills or "[]"),
-                    soft_skills=json.loads(student.soft_skills or "[]"),
-                    projects=json.loads(student.projects or "[]")
-                )
-                featured.append(student_public)
-            
-            return featured
+    async def get_featured_students(self, session: AsyncSession, limit: int = 10) -> List[StudentPublic]:
+        """Obtener estudiantes destacados basado en métricas de calidad - ASYNC"""
+        result = await session.execute(
+            select(Student).where(Student.is_active == True)
+        )
+        students = result.scalars().all()
+        
+        scored_students = []
+        
+        for student in students:
+            score = self._calculate_student_featured_score(student)
+            scored_students.append((student, score))
+        
+        # Ordenar por score y tomar los mejores
+        scored_students.sort(key=lambda x: x[1], reverse=True)
+        
+        featured = []
+        for student, score in scored_students[:limit]:
+            student_public = StudentPublic(
+                id=student.id,
+                name=student.name,
+                program=student.program,
+                skills=json.loads(student.skills or "[]"),
+                soft_skills=json.loads(student.soft_skills or "[]"),
+                projects=json.loads(student.projects or "[]")
+            )
+            featured.append(student_public)
+        
+        return featured
     
     def _calculate_student_featured_score(self, student: Student) -> float:
         """Calcular score para estudiante destacado"""

@@ -61,3 +61,4 @@ moirai.egg-info/
 build/
 dist/
 .eggs/
+.json/

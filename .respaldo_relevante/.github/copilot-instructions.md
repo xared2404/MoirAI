@@ -34,7 +34,7 @@
 -   Algoritmo de Matchmaking
     -   El módulo de clasificación deberá generar un puntaje de compatibilidad (matchmaking) entre un perfil de estudiante y una vacante, basado en las habilidades inferidas y los requisitos empresariales.
 
--   Filtros Avanzados (API)◊v
+-   Filtros Avanzados (API)
     -  La API deberá permitir consultas mediante filtros booleanos y de texto sobre habilidades técnicas, proyectos prototípicos y nivel de experiencia (para alimentar Búsqueda y Matchmaking Automatizado).
 
 -   Notificaciones de Coincidencia
@@ -57,7 +57,23 @@
 -   Cumplimiento Regulatorio (Adherencia)
     -   La arquitectura y los procesos deben adherirse a la LFPDPPP y los estándares ISO/IEC 27001.
 
-#	Buenas Prácticas Ciberseguridad para la Anonimización de Datos
+#	Secciones CV estilo Harvard
+
+-	Información de Contacto: Nombre completo, número de teléfono, dirección de correo electrónico y, opcionalmente, perfil de LinkedIn.
+-	Resumen Profesional (Opcional, pero recomendado): Una breve descripción que resalta las habilidades y experiencia más relevantes para el puesto al que se aplica. Es especialmente útil para candidatos con más experiencia.
+-	Formación Académica: Se detalla la historia educativa en orden cronológico inverso, incluyendo el nombre de la institución, título obtenido, fechas y cualquier honor o premio. En el ámbito académico, esta sección suele ser más prominente.
+-	Experiencia Laboral: Listado de empleos anteriores en orden cronológico inverso, con fechas, nombre de la empresa, cargo y una descripción de responsabilidades y logros.
+-	Habilidades/Competencias: Sección para destacar habilidades específicas relevantes para el puesto (idiomas, herramientas técnicas, software, etc.).
+-	Secciones Adicionales (Opcionales): Dependiendo de la experiencia y el campo, se pueden incluir secciones como:
+	-	Premios y reconocimientos.
+	-	Publicaciones y presentaciones (crucial en CVs académicos).
+	-	Proyectos de investigación.
+	-	Liderazgo y actividades extracurriculares.
+	-	Voluntariado o prácticas.
+-	Referencias (Opcional): A menudo se omite, con una línea que indica "Referencias disponibles bajo petición" si es necesario. 
+
+
+#	Ciberseguridad para la Anonimización de Datos
 ##	Evaluación y Clasificación de Datos
 	-	Realizar inventario exhaustivo de activos de datos en la organización
 	-	Clasificar información según sensibilidad: pública, interna, confidencial, crítica
@@ -92,6 +108,19 @@
 	-	Revisar periódicamente efectividad de técnicas aplicadas
 	-	Actualizar estrategias según evolución de amenazas
 	-	Capacitar continuamente al personal técnico
-	-	Incorporar feedback de auditorías y evaluaciones
+	-	Antes de querer crear reportes ejecutivos, consultar al usuario
+	-	Verifica la documentación innecesaria para su eliminación
 
 
+#	Buenas prácticas
+	-	Actualizar INDEX.md cuando se agregue documentación
+	-	Mantener clasificación de acceso (🔒 INTERNO vs 🌍 PÚBLICO)
+	-	Antes de crear nuevos documentos, verificar si ya existen
+	-	Procura actualizar documentos obsoletos y eliminar redundancias e innecesarios
+	-	Crea unicamente documentación de usuario y técnica cuando sea necesario y evita reportes repetidos o más de 1 resumen.
+	-	Revisa a detalle todo lo unstaged por si algo te puede ser útil antes de crear nuevos scripts, podrás refactorizarlos
+	-	Evita el sobre desarrollo: prioriza MVPs simples y funcionales
+	-	Usa checklist para organizar tareas y fases de desarrollo
+	-	Antes de archivar o eliminar, verifica si el archivo puede ser útil en el futuro
+	-	Realiza pruebas unitarias, de integración y de rendimiento
+	-	Por último, cada que termines de implementar algo de la documentación, elimina aquella que ya no sea útil para evitar acumular docs

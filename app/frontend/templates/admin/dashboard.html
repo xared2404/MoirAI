@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MoirAI Admin Dashboard - Control Panel">
+    <title>MoirAI - Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/admin-styles.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <span>MoirAI Admin</span>
+            </div>
+            <button class="toggle-sidebar" id="toggleSidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-section="students">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Estudiantes</span>
+                <span class="badge">127</span>
+            </a>
+            <a href="#" class="nav-item" data-section="companies">
+                <i class="fas fa-building"></i>
+                <span>Empresas</span>
+                <span class="badge">45</span>
+            </a>
+            <a href="#" class="nav-item" data-section="jobs">
+                <i class="fas fa-briefcase"></i>
+                <span>Empleos</span>
+                <span class="badge">1,234</span>
+            </a>
+            <a href="#" class="nav-item" data-section="api">
+                <i class="fas fa-plug"></i>
+                <span>API Endpoints</span>
+            </a>
+            <a href="#" class="nav-item" data-section="applications">
+                <i class="fas fa-file-alt"></i>
+                <span>Aplicaciones</span>
+                <span class="badge">892</span>
+            </a>
+            <a href="#" class="nav-item" data-section="analytics">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="#" class="nav-item" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Configuración</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="/" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Volver al sitio</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Navigation Bar -->
+        <header class="top-nav">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar estudiantes, empresas, empleos...">
+            </div>
+            <div class="top-nav-right">
+                <button class="icon-btn notifications" title="Notificaciones">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <button class="icon-btn messages" title="Mensajes">
+                    <i class="fas fa-envelope"></i>
+                    <span class="notification-badge">5</span>
+                </button>
+                <div class="user-profile">
+                    <img src="https://via.placeholder.com/40" alt="Admin">
+                    <div class="user-info">
+                        <div class="user-name">Admin User</div>
+                        <div class="user-role">Administrador</div>
+                    </div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="section-header">
+                <h1>Dashboard</h1>
+                <div class="header-actions">
+                    <select class="filter-select">
+                        <option>Últimos 7 días</option>
+                        <option>Últimos 30 días</option>
+                        <option>Últimos 90 días</option>
+                        <option>Todo el año</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Estudiantes Activos</h3>
+                        <span class="kpi-icon"><i class="fas fa-graduation-cap"></i></span>
+                    </div>
+                    <div class="kpi-value">1,247</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 12.5% este mes
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Empresas Conectadas</h3>
+                        <span class="kpi-icon"><i class="fas fa-building"></i></span>
+                    </div>
+                    <div class="kpi-value">156</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 8.3% este mes
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Empleos Publicados</h3>
+                        <span class="kpi-icon"><i class="fas fa-briefcase"></i></span>
+                    </div>
+                    <div class="kpi-value">4,892</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 24.7% este mes
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Tasa de Éxito</h3>
+                        <span class="kpi-icon"><i class="fas fa-check-circle"></i></span>
+                    </div>
+                    <div class="kpi-value">92.3%</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 2.1% este mes
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>API Requests</h3>
+                        <span class="kpi-icon"><i class="fas fa-plug"></i></span>
+                    </div>
+                    <div class="kpi-value">152.4K</div>
+                    <div class="kpi-change negative">
+                        <i class="fas fa-arrow-down"></i> -3.2% vs semana anterior
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Sistema Health</h3>
+                        <span class="kpi-icon"><i class="fas fa-heartbeat"></i></span>
+                    </div>
+                    <div class="kpi-value">99.8%</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> Operacional
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics de Visitas -->
+            <div class="section-divider"></div>
+            <div class="analytics-header">
+                <h2>Análisis de Visitas y Páginas Vistas</h2>
+            </div>
+
+            <!-- Visitas KPI Cards -->
+            <div class="visits-kpi-grid">
+                <div class="visits-card">
+                    <div class="visits-header">
+                        <span class="visits-label">Visitas Totales</span>
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="visits-value">248,567</div>
+                    <div class="visits-stats">
+                        <span class="stat-item">
+                            <span class="stat-label">Promedio por día:</span>
+                            <span class="stat-value">8,285</span>
+                        </span>
+                    </div>
+                    <div class="visits-trend positive">
+                        <i class="fas fa-arrow-up"></i> 15.8% vs período anterior
+                    </div>
+                </div>
+
+                <div class="visits-card">
+                    <div class="visits-header">
+                        <span class="visits-label">Visitas del Mes</span>
+                        <i class="fas fa-calendar-days"></i>
+                    </div>
+                    <div class="visits-value">45,230</div>
+                    <div class="visits-stats">
+                        <span class="stat-item">
+                            <span class="stat-label">Promedio diario:</span>
+                            <span class="stat-value">1,508</span>
+                        </span>
+                    </div>
+                    <div class="visits-trend positive">
+                        <i class="fas fa-arrow-up"></i> 8.2% vs mes anterior
+                    </div>
+                </div>
+
+                <div class="visits-card">
+                    <div class="visits-header">
+                        <span class="visits-label">Visitas de la Semana</span>
+                        <i class="fas fa-calendar-week"></i>
+                    </div>
+                    <div class="visits-value">10,847</div>
+                    <div class="visits-stats">
+                        <span class="stat-item">
+                            <span class="stat-label">Promedio diario:</span>
+                            <span class="stat-value">1,550</span>
+                        </span>
+                    </div>
+                    <div class="visits-trend positive">
+                        <i class="fas fa-arrow-up"></i> 3.5% vs semana anterior
+                    </div>
+                </div>
+
+                <div class="visits-card">
+                    <div class="visits-header">
+                        <span class="visits-label">Visitas de Hoy</span>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="visits-value">1,642</div>
+                    <div class="visits-stats">
+                        <span class="stat-item">
+                            <span class="stat-label">Últimas 2 horas:</span>
+                            <span class="stat-value">428</span>
+                        </span>
+                    </div>
+                    <div class="visits-trend positive">
+                        <i class="fas fa-arrow-up"></i> 12.3% vs hoy anterior
+                    </div>
+                </div>
+
+                <div class="visits-card">
+                    <div class="visits-header">
+                        <span class="visits-label">Páginas Vistas</span>
+                        <i class="fas fa-file"></i>
+                    </div>
+                    <div class="visits-value">542,891</div>
+                    <div class="visits-stats">
+                        <span class="stat-item">
+                            <span class="stat-label">Promedio por visita:</span>
+                            <span class="stat-value">2.18</span>
+                        </span>
+                    </div>
+                    <div class="visits-trend positive">
+                        <i class="fas fa-arrow-up"></i> 22.1% incremento
+                    </div>
+                </div>
+
+                <div class="visits-card">
+                    <div class="visits-header">
+                        <span class="visits-label">Usuarios Únicos</span>
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="visits-value">89,423</div>
+                    <div class="visits-stats">
+                        <span class="stat-item">
+                            <span class="stat-label">Nuevos esta semana:</span>
+                            <span class="stat-value">2,341</span>
+                        </span>
+                    </div>
+                    <div class="visits-trend positive">
+                        <i class="fas fa-arrow-up"></i> 9.7% vs semana anterior
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Registros por Día</h3>
+                    <canvas id="registersChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Distribución de Usuarios</h3>
+                    <canvas id="usersChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Visitas Histogram -->
+            <div class="chart-card full-width">
+                <div class="chart-header">
+                    <h3>Histograma de Visitas por Hora</h3>
+                    <div class="chart-controls">
+                        <select id="visitsTimeframe" class="chart-select">
+                            <option value="day">Hoy</option>
+                            <option value="week" selected>Esta Semana</option>
+                            <option value="month">Este Mes</option>
+                        </select>
+                    </div>
+                </div>
+                <canvas id="visitsHistogram"></canvas>
+            </div>
+
+            <!-- Páginas Más Visitadas -->
+            <div class="chart-card full-width">
+                <div class="chart-header">
+                    <h3>Páginas Más Visitadas</h3>
+                </div>
+                <div class="top-pages-list">
+                    <div class="top-page-item">
+                        <div class="page-rank">1</div>
+                        <div class="page-info">
+                            <p class="page-name">Página de Inicio (/)</p>
+                            <p class="page-path">Landing Page</p>
+                        </div>
+                        <div class="page-stats">
+                            <span class="page-views">45,230</span>
+                            <span class="page-percentage">18.2%</span>
+                        </div>
+                        <div class="page-bar">
+                            <div class="bar-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="top-page-item">
+                        <div class="page-rank">2</div>
+                        <div class="page-info">
+                            <p class="page-name">Oportunidades (/oportunidades)</p>
+                            <p class="page-path">Job Listings</p>
+                        </div>
+                        <div class="page-stats">
+                            <span class="page-views">38,145</span>
+                            <span class="page-percentage">15.3%</span>
+                        </div>
+                        <div class="page-bar">
+                            <div class="bar-fill" style="width: 84.3%"></div>
+                        </div>
+                    </div>
+
+                    <div class="top-page-item">
+                        <div class="page-rank">3</div>
+                        <div class="page-info">
+                            <p class="page-name">Empresas (/empresas)</p>
+                            <p class="page-path">Company Directory</p>
+                        </div>
+                        <div class="page-stats">
+                            <span class="page-views">32,456</span>
+                            <span class="page-percentage">13.1%</span>
+                        </div>
+                        <div class="page-bar">
+                            <div class="bar-fill" style="width: 71.7%"></div>
+                        </div>
+                    </div>
+
+                    <div class="top-page-item">
+                        <div class="page-rank">4</div>
+                        <div class="page-info">
+                            <p class="page-name">Estudiantes (/estudiantes)</p>
+                            <p class="page-path">Student Profiles</p>
+                        </div>
+                        <div class="page-stats">
+                            <span class="page-views">28,934</span>
+                            <span class="page-percentage">11.6%</span>
+                        </div>
+                        <div class="page-bar">
+                            <div class="bar-fill" style="width: 64%"></div>
+                        </div>
+                    </div>
+
+                    <div class="top-page-item">
+                        <div class="page-rank">5</div>
+                        <div class="page-info">
+                            <p class="page-name">Dashboard (/admin)</p>
+                            <p class="page-path">Admin Panel</p>
+                        </div>
+                        <div class="page-stats">
+                            <span class="page-views">21,567</span>
+                            <span class="page-percentage">8.7%</span>
+                        </div>
+                        <div class="page-bar">
+                            <div class="bar-fill" style="width: 47.6%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="activity-section">
+                <h3>Actividad Reciente</h3>
+                <div class="activity-feed">
+                    <div class="activity-item">
+                        <div class="activity-icon new-user">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p><strong>Nuevo estudiante registrado:</strong> Juan Pérez</p>
+                            <span class="time">Hace 2 minutos</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon job-post">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p><strong>Nuevo empleo publicado:</strong> Desarrollador Full Stack</p>
+                            <span class="time">Hace 15 minutos</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon match">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p><strong>Match exitoso:</strong> María García - TechCorp</p>
+                            <span class="time">Hace 1 hora</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Students Section -->
+        <section id="students" class="content-section">
+            <div class="section-header">
+                <h1>Gestión de Estudiantes</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="addStudentBtn">
+                        <i class="fas fa-plus"></i> Agregar Estudiante
+                    </button>
+                </div>
+            </div>
+
+            <div class="filters-bar">
+                <input type="text" class="filter-input" placeholder="Buscar por nombre o email...">
+                <select class="filter-select">
+                    <option>Todos los estados</option>
+                    <option>Activos</option>
+                    <option>Inactivos</option>
+                    <option>Suspendidos</option>
+                </select>
+                <select class="filter-select">
+                    <option>Todas las carreras</option>
+                    <option>Ingeniería en Sistemas</option>
+                    <option>Administración de Empresas</option>
+                    <option>Contabilidad</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox"></th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Carrera</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td><strong>Juan Pérez García</strong></td>
+                            <td>juan.perez@unrc.edu.mx</td>
+                            <td>Ingeniería en Sistemas</td>
+                            <td>+52 555 123 4567</td>
+                            <td><span class="status-badge active">Activo</span></td>
+                            <td>2025-11-05</td>
+                            <td>
+                                <button class="action-btn view" title="Ver"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn edit" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn delete" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td><strong>María González López</strong></td>
+                            <td>maria.gonzalez@unrc.edu.mx</td>
+                            <td>Administración de Empresas</td>
+                            <td>+52 555 234 5678</td>
+                            <td><span class="status-badge active">Activo</span></td>
+                            <td>2025-11-03</td>
+                            <td>
+                                <button class="action-btn view" title="Ver"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn edit" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn delete" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td><strong>Carlos Rodríguez Martínez</strong></td>
+                            <td>carlos.rodriguez@unrc.edu.mx</td>
+                            <td>Contabilidad</td>
+                            <td>+52 555 345 6789</td>
+                            <td><span class="status-badge inactive">Inactivo</span></td>
+                            <td>2025-10-15</td>
+                            <td>
+                                <button class="action-btn view" title="Ver"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn edit" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn delete" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <button class="page-btn">← Anterior</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">Siguiente →</button>
+            </div>
+        </section>
+
+        <!-- Companies Section -->
+        <section id="companies" class="content-section">
+            <div class="section-header">
+                <h1>Gestión de Empresas</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="addCompanyBtn">
+                        <i class="fas fa-plus"></i> Agregar Empresa
+                    </button>
+                </div>
+            </div>
+
+            <div class="filters-bar">
+                <input type="text" class="filter-input" placeholder="Buscar por nombre de empresa...">
+                <select class="filter-select">
+                    <option>Todos los estados</option>
+                    <option>Verificada</option>
+                    <option>Pendiente</option>
+                    <option>Rechazada</option>
+                </select>
+            </div>
+
+            <div class="companies-grid">
+                <div class="company-card">
+                    <div class="company-header">
+                        <img src="https://via.placeholder.com/60" alt="TechCorp" class="company-logo">
+                        <div class="company-info">
+                            <h3>TechCorp México</h3>
+                            <p>Tecnología e Innovación</p>
+                        </div>
+                        <span class="status-badge verified">Verificada</span>
+                    </div>
+                    <div class="company-details">
+                        <p><strong>Email:</strong> hr@techcorp.com.mx</p>
+                        <p><strong>Empleos:</strong> 23 activos</p>
+                        <p><strong>Registrado:</strong> 2025-09-12</p>
+                    </div>
+                    <div class="company-actions">
+                        <button class="btn btn-small btn-primary">Ver Empleos</button>
+                        <button class="btn btn-small btn-outline">Contactar</button>
+                    </div>
+                </div>
+
+                <div class="company-card">
+                    <div class="company-header">
+                        <img src="https://via.placeholder.com/60" alt="FinServe" class="company-logo">
+                        <div class="company-info">
+                            <h3>FinServe Corp</h3>
+                            <p>Servicios Financieros</p>
+                        </div>
+                        <span class="status-badge verified">Verificada</span>
+                    </div>
+                    <div class="company-details">
+                        <p><strong>Email:</strong> careers@finserve.com.mx</p>
+                        <p><strong>Empleos:</strong> 15 activos</p>
+                        <p><strong>Registrado:</strong> 2025-08-20</p>
+                    </div>
+                    <div class="company-actions">
+                        <button class="btn btn-small btn-primary">Ver Empleos</button>
+                        <button class="btn btn-small btn-outline">Contactar</button>
+                    </div>
+                </div>
+
+                <div class="company-card">
+                    <div class="company-header">
+                        <img src="https://via.placeholder.com/60" alt="ConsultX" class="company-logo">
+                        <div class="company-info">
+                            <h3>ConsultX Solutions</h3>
+                            <p>Consultoría Empresarial</p>
+                        </div>
+                        <span class="status-badge pending">Pendiente</span>
+                    </div>
+                    <div class="company-details">
+                        <p><strong>Email:</strong> info@consultx.com.mx</p>
+                        <p><strong>Empleos:</strong> 0 activos</p>
+                        <p><strong>Registrado:</strong> 2025-11-08</p>
+                    </div>
+                    <div class="company-actions">
+                        <button class="btn btn-small btn-success">Verificar</button>
+                        <button class="btn btn-small btn-outline">Rechazar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Endpoints Section -->
+        <section id="api" class="content-section">
+            <div class="section-header">
+                <h1>API Endpoints & Documentación</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="generateDocsBtn">
+                        <i class="fas fa-file-pdf"></i> Generar Documentación
+                    </button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="endpoints">Endpoints</button>
+                <button class="tab-btn" data-tab="status">Estado del Sistema</button>
+                <button class="tab-btn" data-tab="logs">Logs</button>
+            </div>
+
+            <div class="tab-content active" id="endpoints-tab">
+                <div class="api-endpoints">
+                    <div class="endpoint-card">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-info">
+                            <h4>/api/v1/students</h4>
+                            <p>Obtener lista de todos los estudiantes</p>
+                        </div>
+                        <div class="endpoint-status">
+                            <span class="status-ok">✓ Funcionando</span>
+                            <span class="response-time">152ms</span>
+                        </div>
+                        <button class="btn btn-small btn-outline">Probar</button>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-method post">POST</div>
+                        <div class="endpoint-info">
+                            <h4>/api/v1/students</h4>
+                            <p>Crear nuevo estudiante</p>
+                        </div>
+                        <div class="endpoint-status">
+                            <span class="status-ok">✓ Funcionando</span>
+                            <span class="response-time">248ms</span>
+                        </div>
+                        <button class="btn btn-small btn-outline">Probar</button>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-info">
+                            <h4>/api/v1/companies</h4>
+                            <p>Obtener lista de todas las empresas</p>
+                        </div>
+                        <div class="endpoint-status">
+                            <span class="status-ok">✓ Funcionando</span>
+                            <span class="response-time">89ms</span>
+                        </div>
+                        <button class="btn btn-small btn-outline">Probar</button>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-method post">POST</div>
+                        <div class="endpoint-info">
+                            <h4>/api/v1/matching</h4>
+                            <p>Calcular matching entre perfil y vacantes</p>
+                        </div>
+                        <div class="endpoint-status">
+                            <span class="status-ok">✓ Funcionando</span>
+                            <span class="response-time">512ms</span>
+                        </div>
+                        <button class="btn btn-small btn-outline">Probar</button>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-info">
+                            <h4>/api/v1/jobs</h4>
+                            <p>Obtener empleos disponibles</p>
+                        </div>
+                        <div class="endpoint-status">
+                            <span class="status-ok">✓ Funcionando</span>
+                            <span class="response-time">178ms</span>
+                        </div>
+                        <button class="btn btn-small btn-outline">Probar</button>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-method post">POST</div>
+                        <div class="endpoint-info">
+                            <h4>/api/v1/auth/login</h4>
+                            <p>Autenticación de usuario</p>
+                        </div>
+                        <div class="endpoint-status">
+                            <span class="status-ok">✓ Funcionando</span>
+                            <span class="response-time">234ms</span>
+                        </div>
+                        <button class="btn btn-small btn-outline">Probar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="status-tab">
+                <div class="system-status">
+                    <div class="status-item">
+                        <div class="status-indicator ok"></div>
+                        <div class="status-info">
+                            <h4>API Server</h4>
+                            <p>Estado: Activo</p>
+                        </div>
+                        <span>99.8% Uptime</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator ok"></div>
+                        <div class="status-info">
+                            <h4>Base de Datos</h4>
+                            <p>PostgreSQL 13.0</p>
+                        </div>
+                        <span>Conectada</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator ok"></div>
+                        <div class="status-info">
+                            <h4>Servicio NLP</h4>
+                            <p>Análisis de currículums</p>
+                        </div>
+                        <span>Operacional</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator ok"></div>
+                        <div class="status-info">
+                            <h4>Sistema de Caché</h4>
+                            <p>Redis 6.0</p>
+                        </div>
+                        <span>Conectado</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="logs-tab">
+                <div class="logs-viewer">
+                    <div class="log-entry info">
+                        <span class="log-time">14:32:51</span>
+                        <span class="log-level">INFO</span>
+                        <span class="log-message">Nueva solicitud de matching recibida de usuario ID 1247</span>
+                    </div>
+                    <div class="log-entry info">
+                        <span class="log-time">14:32:50</span>
+                        <span class="log-level">INFO</span>
+                        <span class="log-message">Estudiante juan.perez@unrc.edu.mx se registró correctamente</span>
+                    </div>
+                    <div class="log-entry warning">
+                        <span class="log-time">14:32:45</span>
+                        <span class="log-level">WARN</span>
+                        <span class="log-message">Alta latencia detectada en endpoint /api/v1/matching (512ms)</span>
+                    </div>
+                    <div class="log-entry info">
+                        <span class="log-time">14:32:40</span>
+                        <span class="log-level">INFO</span>
+                        <span class="log-message">Backup de base de datos completado exitosamente</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Applications Section -->
+        <section id="applications" class="content-section">
+            <div class="section-header">
+                <h1>Seguimiento de Aplicaciones</h1>
+            </div>
+
+            <div class="filters-bar">
+                <select class="filter-select">
+                    <option>Todos los estados</option>
+                    <option>Aplicado</option>
+                    <option>En Revisión</option>
+                    <option>Entrevista</option>
+                    <option>Aceptado</option>
+                    <option>Rechazado</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Estudiante</th>
+                            <th>Empresa</th>
+                            <th>Puesto</th>
+                            <th>Estado</th>
+                            <th>Fecha Aplicación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Juan Pérez García</td>
+                            <td>TechCorp México</td>
+                            <td>Desarrollador Full Stack</td>
+                            <td><span class="status-badge applied">Aplicado</span></td>
+                            <td>2025-11-10</td>
+                            <td>
+                                <button class="action-btn view"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>María González López</td>
+                            <td>FinServe Corp</td>
+                            <td>Analista Financiero</td>
+                            <td><span class="status-badge interview">Entrevista</span></td>
+                            <td>2025-11-08</td>
+                            <td>
+                                <button class="action-btn view"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Carlos Rodríguez Martínez</td>
+                            <td>TechCorp México</td>
+                            <td>Ingeniero de Datos</td>
+                            <td><span class="status-badge accepted">Aceptado</span></td>
+                            <td>2025-11-05</td>
+                            <td>
+                                <button class="action-btn view"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Analytics Section (Integrated) -->
+        <section id="analytics" class="content-section">
+            <div class="section-header">
+                <h1>Análisis y Reportes Avanzados</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="refreshAnalytics">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message" class="error-message" style="display: none;"></div>
+
+            <!-- Date Range Filter -->
+            <div class="date-range">
+                <div class="date-input-group">
+                    <label for="start-date">Desde:</label>
+                    <input type="date" id="start-date" class="filter-input">
+                </div>
+                <div class="date-input-group">
+                    <label for="end-date">Hasta:</label>
+                    <input type="date" id="end-date" class="filter-input">
+                </div>
+                <button class="btn btn-primary">Actualizar</button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-state" style="display: none;">
+                <div class="spinner"></div>
+                <p>Cargando analítica...</p>
+            </div>
+
+            <!-- Analytics Content -->
+            <div id="analytics-content">
+                <!-- KPI Cards -->
+                <div id="kpi-grid" class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Estudiantes</h3>
+                            <span class="kpi-icon"><i class="fas fa-graduation-cap"></i></span>
+                        </div>
+                        <div class="kpi-value" id="kpi-students">0</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> <span id="kpi-students-change">0%</span> este mes
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Empresas</h3>
+                            <span class="kpi-icon"><i class="fas fa-building"></i></span>
+                        </div>
+                        <div class="kpi-value" id="kpi-companies">0</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> <span id="kpi-companies-change">0%</span> este mes
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Empleos</h3>
+                            <span class="kpi-icon"><i class="fas fa-briefcase"></i></span>
+                        </div>
+                        <div class="kpi-value" id="kpi-jobs">0</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> <span id="kpi-jobs-change">0%</span> este mes
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Aplicaciones</h3>
+                            <span class="kpi-icon"><i class="fas fa-file-alt"></i></span>
+                        </div>
+                        <div class="kpi-value" id="kpi-applications">0</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> <span id="kpi-applications-change">0%</span> este mes
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div id="charts-section" class="charts-section">
+                    <div class="chart-card">
+                        <h3>Tendencia de Estudiantes</h3>
+                        <canvas id="students-chart" height="250"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Tendencia de Empleos</h3>
+                        <canvas id="jobs-chart" height="250"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Aplicaciones por Período</h3>
+                        <canvas id="applications-chart" height="250"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Tasa de Éxito</h3>
+                        <canvas id="success-rate-chart" height="250"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tables Section -->
+                <div id="tables-section" class="tables-section">
+                    <div class="chart-card">
+                        <h3>Top 5 Empresas</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Ranking</th>
+                                    <th>Empresa</th>
+                                    <th>Empleos</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-companies">
+                                <tr><td colspan="3" style="text-align: center; color: #999;">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>Top 5 Habilidades</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Ranking</th>
+                                    <th>Habilidad</th>
+                                    <th>Demanda</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-skills">
+                                <tr><td colspan="3" style="text-align: center; color: #999;">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>Top 5 Ubicaciones</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Ranking</th>
+                                    <th>Ubicación</th>
+                                    <th>Empleos</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-locations">
+                                <tr><td colspan="3" style="text-align: center; color: #999;">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="content-section">
+            <div class="section-header">
+                <h1>Configuración del Sistema</h1>
+            </div>
+
+            <div class="settings-group">
+                <h3>Configuración General</h3>
+                <div class="setting-item">
+                    <label>Nombre de la Plataforma</label>
+                    <input type="text" value="MoirAI" class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Email de Contacto</label>
+                    <input type="email" value="admin@moirai.com" class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Teléfono</label>
+                    <input type="tel" value="+52 555 123 4567" class="setting-input">
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Configuración de Seguridad</h3>
+                <div class="setting-item toggle">
+                    <label>Autenticación de Dos Factores</label>
+                    <input type="checkbox" checked>
+                </div>
+                <div class="setting-item toggle">
+                    <label>Encriptación HTTPS</label>
+                    <input type="checkbox" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Tiempo de Sesión (minutos)</label>
+                    <input type="number" value="60" class="setting-input">
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Configuración de Email</h3>
+                <div class="setting-item">
+                    <label>Servidor SMTP</label>
+                    <input type="text" value="smtp.gmail.com" class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Puerto SMTP</label>
+                    <input type="number" value="587" class="setting-input">
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button class="btn btn-primary">Guardar Cambios</button>
+                <button class="btn btn-outline">Cancelar</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Config -->
+    <script>
+        // ✅ CORRECCIÓN: Detectar dinámicamente la URL base desde el navegador
+        const protocol = window.location.protocol
+        const hostname = window.location.hostname
+        const port = window.location.port
+        const origin = port ? `${protocol}//${hostname}:${port}` : `${protocol}//${hostname}`
+        window.API_BASE_URL = `${origin}/api/v1`
+        console.log('🔗 API Base URL:', window.API_BASE_URL)
+    </script>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+    <!-- Navbar Manager -->
+    <script src="/static/js/navbar-manager.js"></script>
+
+    <!-- Charts Script -->
+    <script src="/static/js/charts.js"></script>
+
+    <!-- Admin Analytics Module (Integrated Mode) -->
+    <script src="/static/js/pages/admin-analytics.js"></script>
+
+    <!-- Admin Dashboard Script -->
+    <script src="/static/js/admin-dashboard.js"></script>
+</body>
+
+</html>

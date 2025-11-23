@@ -32,7 +32,21 @@ class StudentCreate(StudentBase):
 class StudentUpdate(BaseModel):
     """Esquema para actualizar estudiante"""
     name: Optional[str] = Field(None, min_length=1, max_length=100)
+    first_name: Optional[str] = Field(None, max_length=50)
+    last_name: Optional[str] = Field(None, max_length=50)
+    email: Optional[str] = Field(None)  # No editable en el formulario, pero permitido en API
+    phone: Optional[str] = Field(None, max_length=20)
+    bio: Optional[str] = Field(None)
     program: Optional[str] = Field(None, max_length=100)
+    career: Optional[str] = Field(None, max_length=100)
+    semester: Optional[str] = Field(None, max_length=20)
+    
+    # ✨ Secciones CV Harvard (OPCIONALES)
+    objective: Optional[str] = Field(None, max_length=500, description="Objetivo profesional")
+    education: Optional[List[dict]] = Field(None, description="Lista de educaciones (JSON)")
+    experience: Optional[List[dict]] = Field(None, description="Lista de experiencias (JSON)")
+    certifications: Optional[List[str]] = Field(None, description="Lista de certificaciones")
+    languages: Optional[List[str]] = Field(None, description="Lista de idiomas")
 
 
 class StudentSkillsUpdate(BaseModel):
@@ -46,24 +60,65 @@ class StudentProfile(BaseModel):
     """Esquema para perfil completo de estudiante"""
     id: int
     name: str
+    role: str = "student"  # ✅ Incluir role para que frontend siempre sepa el rol
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     email: str
-    program: Optional[str]
+    phone: Optional[str] = None
+    bio: Optional[str] = None
+    program: Optional[str] = None
+    career: Optional[str] = None
+    semester: Optional[str] = None
     skills: List[str] = []
     soft_skills: List[str] = []
     projects: List[str] = []
+    
+    # ✨ Secciones CV Harvard (OPCIONALES)
+    objective: Optional[str] = None
+    education: Optional[List[dict]] = None
+    experience: Optional[List[dict]] = None
+    certifications: Optional[List[str]] = None
+    languages: Optional[List[str]] = None
+    
+    cv_uploaded: bool = False
+    cv_filename: Optional[str] = None
+    cv_upload_date: Optional[datetime] = None
     created_at: datetime
     last_active: Optional[datetime] = None
     is_active: bool
 
 
 class StudentPublic(BaseModel):
-    """Esquema público de estudiante (para empresas)"""
+    """
+    ✅ Esquema PÚBLICO de estudiante (para empresas sin autenticación)
+    
+    Incluye SOLO información no-sensible:
+    - Datos básicos del perfil
+    - Habilidades técnicas y blandas
+    - Proyectos completados
+    - Indicadores de CV (pero NO contenido)
+    - Metadatos públicos
+    
+    EXCLUYE datos sensibles:
+    - Email (encriptado)
+    - Teléfono (encriptado)  
+    - Historiales académicos detallados
+    - Contenido del CV (profile_text)
+    """
     id: int
     name: str
     program: Optional[str]
     skills: List[str] = []
     soft_skills: List[str] = []
     projects: List[str] = []
+    
+    # ✅ NUEVO: Información de CV (metadata, pero NO contenido)
+    cv_uploaded: bool = False
+    cv_filename: Optional[str] = None
+    
+    # ✅ NUEVO: Metadatos no-sensibles
+    created_at: datetime
+    last_active: Optional[datetime] = None
 
 
 # Company schemas
@@ -81,12 +136,23 @@ class CompanyCreate(CompanyBase):
     pass
 
 
-class CompanyProfile(CompanyBase):
-    """Esquema para perfil de empresa"""
+class CompanyProfile(BaseModel):
+    """
+    ✅ UNIFIED: Esquema para perfil de empresa
+    
+    NOTA CRÍTICA: email es str (no EmailStr) porque puede estar encriptado
+    Nunca retornamos EmailStr en APIs públicas para evitar validación de formato
+    """
     id: int
-    is_verified: bool
-    is_active: bool
-    created_at: datetime
+    name: str
+    role: str = "company"  # ✅ Incluir role para que frontend siempre sepa el rol
+    email: str  # ✅ ALWAYS str, NEVER EmailStr (puede estar encriptado)
+    industry: Optional[str] = None
+    size: Optional[str] = None
+    location: Optional[str] = None
+    is_verified: bool = False
+    is_active: bool = True
+    created_at: datetime = None
 
 
 # Job Position schemas
@@ -211,16 +277,61 @@ class UserContext(BaseModel):
     permissions: List[str] = []
 
 
+class UnifiedUserProfile(BaseModel):
+    """
+    ✅ UNIFIED: Perfil unificado de usuario (student, company, admin)
+    
+    Este schema se retorna en `/auth/me` para TODOS los roles.
+    Los campos específicos se incluyen según el rol.
+    """
+    id: int
+    name: str
+    role: str  # student, company, admin
+    email: str  # SIEMPRE str (puede estar encriptado)
+    
+    # Campos de estudiante (None para otros roles)
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    bio: Optional[str] = None
+    program: Optional[str] = None
+    career: Optional[str] = None
+    year: Optional[str] = None
+    skills: Optional[List[str]] = None
+    soft_skills: Optional[List[str]] = None
+    projects: Optional[List[str]] = None
+    cv_uploaded: Optional[bool] = None
+    cv_filename: Optional[str] = None
+    cv_upload_date: Optional[datetime] = None
+    
+    # Campos de empresa (None para otros roles)
+    industry: Optional[str] = None
+    size: Optional[str] = None
+    location: Optional[str] = None
+    is_verified: Optional[bool] = None
+    
+    # Metadatos comunes
+    is_active: bool = True
+    created_at: datetime
+
+
 class UserRegister(BaseModel):
     """Esquema para registro de usuario"""
     name: str = Field(..., min_length=1, max_length=100)
     email: EmailStr
     role: str = Field(..., pattern="^(student|company|admin)$")
+    password: str = Field(..., min_length=6, description="Contraseña del usuario")
     # Campos específicos por rol
     program: Optional[str] = Field(None, max_length=100, description="Para estudiantes")
     industry: Optional[str] = Field(None, max_length=50, description="Para empresas")
     company_size: Optional[str] = Field(None, max_length=20, description="Para empresas")
     location: Optional[str] = Field(None, max_length=100, description="Para empresas")
+
+
+class LoginRequest(BaseModel):
+    """Esquema para login con email y contraseña"""
+    email: EmailStr = Field(..., description="Email del usuario")
+    password: str = Field(..., min_length=6, description="Contraseña del usuario")
 
 
 class UserLoginResponse(BaseModel):

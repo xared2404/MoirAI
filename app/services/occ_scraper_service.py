@@ -40,6 +40,8 @@ class JobOffer(BaseModel):
     category: Optional[str] = None
     subcategory: Optional[str] = None
     experience_required: Optional[str] = None
+    # ✅ AGREGAR: experience_level (para compatibilidad con JobPosition)
+    experience_level: Optional[str] = None
     education_required: Optional[str] = None
     skills: List[str] = []
     url: Optional[str] = None  # Ahora opcional para manejar errores de scraping
@@ -621,33 +623,36 @@ class OCCScraper:
             experience_required = extra_data.get("ex", "No especificado")
             
             # ===== FECHAS DE PUBLICACIÓN =====
-            # Campo "st" = Fecha de publicación (ISO 8601)
-            # Campo "dlu" = Fecha última actualización (ISO 8601)
+            # Campo "st" = Fecha de publicación (ISO 8601): "2025-10-21T00:00:00Z"
+            # Campo "dlu" = Fecha última actualización (ISO 8601): "2025-10-21T00:00:00Z"
             # Campo "dluf" = Fecha formateada en español (ej: "21 de octubre")
             # Campo "dlur" = Fecha relativa (ej: "Hace 3 días")
-            # Campo "pt" = Posting time (ISO 8601)
+            # Campo "pt" = Posting time (ISO 8601): "2025-10-21T00:00:00Z"
+            #
+            # ESTRATEGIA: Mantener fecha relativa como string para BD
+            # El job_application_service hace la conversión si es necesario
             
             publication_date = None
-            publication_date_formatted = None
             
             # Prioridad 1: Usar "st" (fecha de publicación en ISO 8601)
             if offer.get("st"):
-                try:
-                    pub_datetime = datetime.fromisoformat(offer.get("st").replace("Z", "+00:00"))
-                    publication_date = pub_datetime.strftime("%Y-%m-%d %H:%M:%S")
-                    logger.debug(f"Publication date from 'st' field: {publication_date}")
-                except (ValueError, AttributeError) as e:
-                    logger.debug(f"Could not parse 'st' field: {e}")
+                publication_date = offer.get("st")  # Mantener como string ISO
+                logger.debug(f"Publication date from 'st' field (ISO): {publication_date}")
             
-            # Fallback: Usar "dluf" (fecha formateada en español)
-            if not publication_date and offer.get("dluf"):
-                publication_date_formatted = offer.get("dluf")
-                logger.debug(f"Using formatted date 'dluf': {publication_date_formatted}")
+            # Fallback 2: Usar "dlur" (fecha relativa)
+            elif offer.get("dlur"):
+                publication_date = offer.get("dlur")  # Ej: "Hace 5 días"
+                logger.debug(f"Using relative date 'dlur': {publication_date}")
             
-            # Fallback: Usar "dlur" (fecha relativa)
-            if not publication_date and offer.get("dlur"):
-                publication_date_formatted = offer.get("dlur")
-                logger.debug(f"Using relative date 'dlur': {publication_date_formatted}")
+            # Fallback 3: Usar "dluf" (fecha formateada en español)
+            elif offer.get("dluf"):
+                publication_date = offer.get("dluf")  # Ej: "21 de octubre"
+                logger.debug(f"Using formatted date 'dluf': {publication_date}")
+            
+            # Fallback final: fecha actual si nada está disponible
+            if not publication_date:
+                publication_date = datetime.now().isoformat()
+                logger.warning(f"No publication date found for job {job_id}, using current datetime")
             
             # URL de la oferta
             # Prioridad 1: Usar "lha" (URL con tracking)
@@ -764,15 +769,15 @@ class OCCScraper:
                 soft_skills=soft_skills,
                 full_description=full_description[:1000],  # Limitar a 1000 chars para no saturar DB
                 url=job_url,
-                publication_date=publication_date or publication_date_formatted,  # ✅ Ahora con fecha real
+                publication_date=publication_date,  # ✅ String: ISO 8601 o fecha relativa
                 is_featured=False,
                 is_new=False,
                 company_logo=company_data.get("logo", ""),
-                share_url=share_url  # ✅ Ahora con URL de compartir real
+                share_url=share_url  # ✅ URL de compartir real
             )
             
             logger.info(f"✅ Successfully parsed job from API: {job_title} @ {company_name}")
-            logger.info(f"   Publication date: {publication_date or publication_date_formatted}")
+            logger.info(f"   Publication date: {publication_date}")
             logger.info(f"   Share URL: {share_url[:60]}...")
             return job_offer
             

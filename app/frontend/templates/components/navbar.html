@@ -1,0 +1,49 @@
+<!-- 
+    ============================================================================
+    NAVBAR COMPONENT - Homologado para todos los roles
+    ============================================================================
+    Este componente proporciona una navbar consistente para:
+    - Estudiantes (student)
+    - Empresas (company)
+    - Administradores (admin)
+    
+    La navbar es generada COMPLETAMENTE por navbar-manager.js
+    Nunca se debe agregar contenido HTML aquí que no sea el contenedor.
+    ============================================================================
+-->
+
+<!-- Navbar - Generado dinámicamente por navbar-manager.js -->
+<nav class="navbar" id="navbar-container">
+    <!-- Contenido insertado por JavaScript -->
+</nav>
+
+<!--
+    NOTAS IMPORTANTES:
+    
+    1. El contenedor #navbar-container DEBE estar presente en todas las páginas
+    2. navbar-manager.js se encarga de:
+       - Detectar el rol del usuario (student/company/admin)
+       - Generar los items de menú según el rol
+       - Marcar el link activo según la página actual
+       - Manejar mobile/responsive
+       - Logout global
+    
+    3. Scripts requeridos (en orden):
+       - api-client.js
+       - storage-manager.js
+       - auth-manager.js
+       - protected-page-manager.js (para páginas protegidas)
+       - navbar-manager.js (DEBE estar después de otros managers)
+    
+    4. Para evitar duplicados:
+       - NO agregues links estáticos en el HTML
+       - navbar-manager.js REEMPLAZA completamente #navbar-container.innerHTML
+       - Se incluye validación para prevenir inicializaciones duplicadas
+    
+    5. Flujo de inicialización:
+       document.DOMContentLoaded
+         → protectedPageManager (si aplica)
+         → navbarManager.initialize()
+         → setupMobileMenu()
+         → setupScrollEffects()
+-->

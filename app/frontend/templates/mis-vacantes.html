@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Vacantes - MoirAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .jobs-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+        }
+
+        .filter-sidebar {
+            background: var(--bg-white);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+        }
+
+        .filter-sidebar h3 {
+            margin: 0 0 1rem 0;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-group:last-child {
+            border-bottom: none;
+        }
+
+        .filter-group label {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .filter-group input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .create-job-btn {
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .job-actions button {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .loading, .error-message, .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .jobs-container {
+                grid-template-columns: 1fr;
+            }
+            .filter-sidebar {
+                height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+            .job-actions {
+                flex-direction: column;
+            }
+            .job-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo"><i class="fas fa-brain"></i> <strong>MoirAI</strong></div>
+            <ul class="nav-menu">
+                <li><a href="/company/dashboard" class="nav-link">Dashboard</a></li>
+                <li><a href="/company/mis-vacantes" class="nav-link active">Mis Vacantes</a></li>
+                <li><a href="/company/profile" class="nav-link">Perfil</a></li>
+                <li><a href="#" onclick="logout()" class="nav-link btn-logout">Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero-section" style="background: linear-gradient(135deg, #730f33, #e2bb84); color: white; padding: 3rem 1.5rem; text-align: center;">
+        <h1 style="margin: 0 0 0.5rem 0; font-size: 2rem;">Mis Vacantes</h1>
+        <p style="margin: 0; opacity: 0.9;">Gestiona y publica nuevas oportunidades laborales</p>
+    </div>
+
+    <div style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
+        <div id="error-message" class="error-message" style="display: none;"></div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary);">Total Vacantes</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: var(--primary-color);" id="stat-total">0</div>
+            </div>
+            <div class="stat-card">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary);">Activas</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: var(--success);" id="stat-active">0</div>
+            </div>
+            <div class="stat-card">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary);">Candidatos</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: var(--info);" id="stat-candidates">0</div>
+            </div>
+            <div class="stat-card">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary);">Coincidencias</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: var(--secondary-color);" id="stat-matches">0</div>
+            </div>
+        </div>
+
+        <div class="jobs-container">
+            <div>
+                <button class="btn btn-primary create-job-btn" onclick="openNewJobModal()">
+                    <i class="fas fa-plus"></i> Nueva Vacante
+                </button>
+
+                <div id="loading-state" class="loading" style="display: none;">
+                    <i class="fas fa-spinner"></i> Cargando vacantes...
+                </div>
+
+                <div id="jobs-grid" class="jobs-grid"></div>
+
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <i class="fas fa-inbox" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <p>Sin vacantes publicadas</p>
+                </div>
+            </div>
+
+            <div class="filter-sidebar">
+                <h3>Filtros</h3>
+                <button class="btn btn-block btn-secondary" onclick="resetFilters()" style="margin-bottom: 1rem; font-size: 0.875rem;">
+                    <i class="fas fa-times"></i> Limpiar
+                </button>
+
+                <div class="filter-group">
+                    <h4 style="margin: 0 0 0.75rem 0; font-size: 0.875rem;">Estado</h4>
+                    <label><input type="checkbox" name="status" value="active"> Activas</label>
+                    <label><input type="checkbox" name="status" value="closed"> Cerradas</label>
+                    <label><input type="checkbox" name="status" value="draft"> Borradores</label>
+                </div>
+
+                <div class="filter-group">
+                    <h4 style="margin: 0 0 0.75rem 0; font-size: 0.875rem;">Tipo de Puesto</h4>
+                    <label><input type="checkbox" name="type" value="full-time"> Tiempo Completo</label>
+                    <label><input type="checkbox" name="type" value="part-time"> Medio Tiempo</label>
+                    <label><input type="checkbox" name="type" value="contract"> Contrato</label>
+                </div>
+
+                <div class="filter-group">
+                    <h4 style="margin: 0 0 0.75rem 0; font-size: 0.875rem;">Rango Salarial</h4>
+                    <label><input type="checkbox" name="salary" value="low"> Bajo</label>
+                    <label><input type="checkbox" name="salary" value="medium"> Medio</label>
+                    <label><input type="checkbox" name="salary" value="high"> Alto</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nueva vacante -->
+    <div id="job-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 0.75rem; padding: 2rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.15);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="margin: 0;">Nueva Vacante</h2>
+                <button onclick="closeNewJobModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <form id="job-form" onsubmit="submitJob(event)">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Título</label>
+                    <input type="text" id="job-title" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Descripción</label>
+                    <textarea id="job-description" required rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;"></textarea>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Skills Requeridos</label>
+                    <input type="text" id="job-skills" placeholder="Separados por comas" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Publicar</button>
+                    <button type="button" onclick="closeNewJobModal()" class="btn btn-secondary" style="flex: 1;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Config -->
+    <script>
+        // ✅ CORRECCIÓN: Detectar dinámicamente la URL base desde el navegador
+        const protocol = window.location.protocol
+        const hostname = window.location.hostname
+        const port = window.location.port
+        const origin = port ? `${protocol}//${hostname}:${port}` : `${protocol}//${hostname}`
+        window.API_BASE_URL = `${origin}/api/v1`
+        console.log('🔗 API Base URL:', window.API_BASE_URL)
+    </script>
+
+    <!-- Scripts -->
+    <script src="/static/js/api-client.js"></script>
+    <script src="/static/js/utils/storage-manager.js"></script>
+    <script src="/static/js/auth-manager.js"></script>
+    <script src="/static/js/notification-manager.js"></script>
+    <script src="/static/js/utils/form-validator.js"></script>
+    <script src="/static/js/protected-page-manager.js"></script>
+    <script src="/static/js/navbar-manager.js"></script>
+    <script src="/static/js/pages/mis-vacantes.js"></script>
+</body>
+
+</html>
+    </script>
+</body>
+</html>

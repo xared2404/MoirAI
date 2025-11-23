@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MoirAI</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navbar - Generado dinámicamente por navbar-manager.js -->
+    <nav class="navbar" id="navbar-container">
+        <!-- Contenido insertado por JavaScript -->
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="container">
+                <h1>Bienvenido, <span id="user-name"></span></h1>
+                <p id="user-subtitle"></p>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid" id="stats-container">
+                    <!-- Cargado dinámicamente según rol -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Estudiante Content -->
+        <div id="student-content" style="display:none;">
+            <!-- Recommendations Section -->
+            <section class="recommendations-section">
+                <div class="container">
+                    <h2>Empleos Recomendados Para Ti</h2>
+                    <p class="section-subtitle">Basado en tu perfil y habilidades</p>
+                    <div id="recommendations-container">
+                        <!-- Cargado dinámicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Applications Section -->
+            <section class="applications-section">
+                <div class="container">
+                    <h2>Mis Aplicaciones</h2>
+                    <div id="applications-container">
+                        <!-- Cargado dinámicamente -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Empresa Content -->
+        <div id="company-content" style="display:none;">
+            <!-- Candidates Search Section -->
+            <section class="candidates-search-section">
+                <div class="container">
+                    <h2>Búsqueda de Candidatos</h2>
+                    <p class="section-subtitle">Encontrá el talento que necesitas</p>
+                    <div id="search-candidates-container">
+                        <!-- Formulario de búsqueda dinámico -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Posted Jobs Section -->
+            <section class="posted-jobs-section">
+                <div class="container">
+                    <h2>Mis Vacantes Publicadas</h2>
+                    <div id="posted-jobs-container">
+                        <!-- Cargado dinámicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Candidates Viewed Section -->
+            <section class="candidates-viewed-section">
+                <div class="container">
+                    <h2>Candidatos Destacados</h2>
+                    <div id="top-candidates-container">
+                        <!-- Cargado dinámicamente -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Admin Content -->
+        <div id="admin-content" style="display:none;">
+            <!-- KPIs Section -->
+            <section class="kpis-section">
+                <div class="container">
+                    <h2>Indicadores de Desempeño (KPIs)</h2>
+                    <div class="kpis-grid" id="kpis-container">
+                        <!-- Cargado dinámicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- System Monitoring Section -->
+            <section class="monitoring-section">
+                <div class="container">
+                    <h2>Monitoreo de Servicios</h2>
+                    <div id="monitoring-container">
+                        <!-- Cargado dinámicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Activity Log Section -->
+            <section class="activity-log-section">
+                <div class="container">
+                    <h2>Registro de Actividades</h2>
+                    <div id="activity-log-container">
+                        <!-- Cargado dinámicamente -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>MoirAI</h4>
+                    <p>Plataforma inteligente de matching laboral para estudiantes de UNRC.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Producto</h4>
+                    <ul>
+                        <li><a href="/oportunidades">Oportunidades</a></li>
+                        <li><a href="/profile">Mi Perfil</a></li>
+                        <li><a href="/">Inicio</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Empresa</h4>
+                    <ul>
+                        <li><a href="#">Acerca de</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacidad</a></li>
+                        <li><a href="#">Términos</a></li>
+                        <li><a href="#">LFPDPPP</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MoirAI. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Config -->
+    <script>
+        // ✅ CORRECCIÓN: Detectar dinámicamente la URL base desde el navegador
+        const protocol = window.location.protocol
+        const hostname = window.location.hostname
+        const port = window.location.port
+        const origin = port ? `${protocol}//${hostname}:${port}` : `${protocol}//${hostname}`
+        window.API_BASE_URL = `${origin}/api/v1`
+        console.log('🔗 API Base URL:', window.API_BASE_URL)
+    </script>
+
+    <!-- Scripts -->
+    <script src="/static/js/api-client.js"></script>
+    <script src="/static/js/utils/storage-manager.js"></script>
+    <script src="/static/js/auth-manager.js"></script>
+    <script src="/static/js/notification-manager.js"></script>
+    <script src="/static/js/protected-page-manager.js"></script>
+    <script src="/static/js/navbar-manager.js"></script>
+    <script src="/static/js/pages/dashboard-role-adapter.js"></script>
+    <script src="/static/js/pages/dashboard.js"></script>
+    <!-- Automated Navigation & Console Capture System -->
+    <script src="/static/js/navigation-console-capture.js"></script>
+    <!-- Test Suite -->
+    <script src="/static/js/test_javascript_cleanup_complete.js"></script>
+</body>
+
+</html>
+

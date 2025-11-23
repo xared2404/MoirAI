@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Candidatos - MoirAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .listing-container {
+            display: flex;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .listing-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        .listing-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .listing-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem 1rem;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+        }
+
+        .listing-header-content h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .listing-search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .listing-search-bar input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .listing-search-bar button {
+            padding: 0.75rem 1.5rem;
+        }
+
+        .filter-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-section:last-child {
+            border-bottom: none;
+        }
+
+        .filter-section h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-item input[type="checkbox"],
+        .filter-item input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .filter-item label {
+            cursor: pointer;
+            user-select: none;
+            flex: 1;
+        }
+
+        .sort-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .sort-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .view-mode-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .view-mode-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .view-mode-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .students-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .student-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .student-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
+        }
+
+        .student-header {
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: start;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: var(--bg-secondary);
+        }
+
+        .student-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .student-major {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .student-university {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .match-score {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .match-score.match-high {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .match-score.match-medium {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .match-score.match-low {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .student-meta {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .student-skills {
+            padding: 1rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .skill-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--primary-color);
+        }
+
+        .student-bio {
+            padding: 1rem 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+        }
+
+        .student-actions .btn {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--bg-secondary);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal-header-student {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            display: flex;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-section {
+            margin-bottom: 2rem;
+        }
+
+        .profile-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .info-item {
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 0.25rem;
+        }
+
+        .info-item strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--primary-color);
+        }
+
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .projects-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .project-item {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+        }
+
+        .project-item h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .project-item p {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tech-tags span {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 1024px) {
+            .listing-container {
+                flex-direction: column;
+            }
+
+            .listing-sidebar {
+                width: 100%;
+                order: -1;
+            }
+
+            .filter-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                padding-bottom: 0;
+                border: none;
+            }
+
+            .students-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .students-container {
+                grid-template-columns: 1fr;
+            }
+
+            .student-header {
+                flex-direction: column;
+            }
+
+            .student-actions {
+                flex-direction: column;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-header-student {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/dashboard">
+                    <i class="fas fa-brain"></i>
+                    <span>MoirAI</span>
+                </a>
+            </div>
+
+            <div class="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/buscar-candidatos" class="nav-link active">
+                            <i class="fas fa-search"></i>
+                            <span>Buscar Candidatos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/mis-propuestas" class="nav-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>Mis Propuestas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/profile" class="nav-link">
+                            <i class="fas fa-user"></i>
+                            <span>Mi Perfil</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-cta">
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="listing-container">
+        <!-- Sidebar de Filtros -->
+        <aside class="listing-sidebar">
+            <div class="filter-section">
+                <h3>Búsqueda</h3>
+                <div class="listing-search-bar">
+                    <input type="text" id="searchStudents" placeholder="Buscar candidatos...">
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Habilidades</h3>
+                <div class="filter-group">
+                    <div class="filter-item">
+                        <input type="checkbox" id="skill-python" class="skill-filter" value="Python">
+                        <label for="skill-python">Python</label>
+                    </div>
+                    <div class="filter-item">
+                        <input type="checkbox" id="skill-javascript" class="skill-filter" value="JavaScript">
+                        <label for="skill-javascript">JavaScript</label>
+                    </div>
+                    <div class="filter-item">
+                        <input type="checkbox" id="skill-react" class="skill-filter" value="React">
+                        <label for="skill-react">React</label>
+                    </div>
+                    <div class="filter-item">
+                        <input type="checkbox" id="skill-sql" class="skill-filter" value="SQL">
+                        <label for="skill-sql">SQL</label>
+                    </div>
+                    <div class="filter-item">
+                        <input type="checkbox" id="skill-devops" class="skill-filter" value="DevOps">
+                        <label for="skill-devops">DevOps</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Disponibilidad</h3>
+                <div class="filter-group">
+                    <div class="filter-item">
+                        <input type="checkbox" id="avail-inmediata" class="availability-filter" value="inmediata">
+                        <label for="avail-inmediata">Inmediata</label>
+                    </div>
+                    <div class="filter-item">
+                        <input type="checkbox" id="avail-2semanas" class="availability-filter" value="2-semanas">
+                        <label for="avail-2semanas">2 Semanas</label>
+                    </div>
+                    <div class="filter-item">
+                        <input type="checkbox" id="avail-mes" class="availability-filter" value="mes">
+                        <label for="avail-mes">1 Mes</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Experiencia</h3>
+                <div class="filter-group">
+                    <div class="filter-item">
+                        <input type="radio" id="exp-sin" name="experience" class="experience-filter" value="sin-experiencia">
+                        <label for="exp-sin">Sin experiencia</label>
+                    </div>
+                    <div class="filter-item">
+                        <input type="radio" id="exp-1" name="experience" class="experience-filter" value="1-proyecto">
+                        <label for="exp-1">1 Proyecto</label>
+                    </div>
+                    <div class="filter-item">
+                        <input type="radio" id="exp-2+" name="experience" class="experience-filter" value="2-proyectos">
+                        <label for="exp-2+">2+ Proyectos</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Universidad</h3>
+                <select id="universityFilter" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0.25rem;">
+                    <option value="">Todas</option>
+                    <option value="UNRC">UNRC</option>
+                    <option value="UNAM">UNAM</option>
+                    <option value="IPN">IPN</option>
+                </select>
+            </div>
+
+            <button class="btn btn-secondary btn-block" id="clearFiltersBtn" style="width: 100%;">
+                <i class="fas fa-times"></i> Limpiar Filtros
+            </button>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="listing-content">
+            <div class="listing-header">
+                <div class="listing-header-content">
+                    <h1><i class="fas fa-user-graduate"></i> Buscar Candidatos</h1>
+                    <p>Encontra los mejores talentos para tu equipo</p>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <strong>Resultados: <span id="resultsCount">0</span></strong>
+                </div>
+
+                <div class="sort-options">
+                    <select id="sortFilter" class="sort-select">
+                        <option value="match">Mejor Match</option>
+                        <option value="experience">Más Experiencia</option>
+                        <option value="recent">Más Recientes</option>
+                    </select>
+                </div>
+
+                <div class="view-mode-buttons">
+                    <button class="view-mode-btn active" data-mode="grid">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-mode-btn" data-mode="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Students Grid -->
+            <div id="studentsContainer" class="students-container view-grid">
+                <!-- Cargado dinámicamente -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button id="prevPageBtn" onclick="previousPage()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span id="pageInfo">Página 1</span>
+                <button id="nextPageBtn" onclick="nextPage()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Config -->
+    <script>
+        // ✅ CORRECCIÓN: Detectar dinámicamente la URL base desde el navegador
+        const protocol = window.location.protocol
+        const hostname = window.location.hostname
+        const port = window.location.port
+        const origin = port ? `${protocol}//${hostname}:${port}` : `${protocol}//${hostname}`
+        window.API_BASE_URL = `${origin}/api/v1`
+        console.log('🔗 API Base URL:', window.API_BASE_URL)
+    </script>
+
+    <!-- Scripts -->
+    <script src="/static/js/api-client.js"></script>
+    <script src="/static/js/utils/storage-manager.js"></script>
+    <script src="/static/js/auth-manager.js"></script>
+    <script src="/static/js/notification-manager.js"></script>
+    <script src="/static/js/utils/form-validator.js"></script>
+    <script src="/static/js/protected-page-manager.js"></script>
+    <script src="/static/js/navbar-manager.js"></script>
+    <script src="/static/js/pages/company-search.js"></script>
+</body>
+
+</html>

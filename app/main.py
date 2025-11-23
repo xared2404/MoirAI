@@ -1,17 +1,34 @@
+# Copyright 2025 HenrySpark369 y MoirAI Contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 Aplicación principal de MoirAI
 FastAPI app con todos los endpoints y configuración
 """
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 import uvicorn
 from datetime import datetime
+from pathlib import Path
 
 from app.core.config import settings
-from app.core.database import create_db_and_tables
+from app.core.database import create_db_and_tables, get_session
+from app.core.admin_init import init_default_admin, verify_admin_access_configured
 from app.api.endpoints import students, auth
 from app.schemas import ErrorResponse
 
@@ -71,16 +88,43 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Configurar archivos estáticos
+static_path = Path(__file__).parent / "frontend" / "static"
+if static_path.exists():
+    app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+
 
 # Event handlers
 @app.on_event("startup")
 async def startup_event():
     """Inicializar aplicación"""
-    # Crear tablas de base de datos
-    create_db_and_tables()
+    # Crear tablas de base de datos (ASYNC)
+    await create_db_and_tables()
+    
+    # Inicializar admin por defecto desde .env (si está habilitado) - ASYNC
+    try:
+        from sqlalchemy.ext.asyncio import AsyncSession
+        from app.core.database import async_engine
+        
+        async with AsyncSession(async_engine) as session:
+            admin_id = await init_default_admin(session)
+            if admin_id:
+                print(f"✅ Admin inicializado: ID {admin_id}")
+    except Exception as e:
+        print(f"⚠️  No se pudo inicializar admin: {e}")
+    
+    # Verificar que hay acceso admin disponible
+    verify_admin_access_configured()
+    
     print(f"🚀 {settings.PROJECT_NAME} iniciado correctamente")
     print(f"📊 Base de datos: {settings.DATABASE_URL}")
     print(f"🔐 Audit logging: {'✅' if settings.ENABLE_AUDIT_LOGGING else '❌'}")
+    print(f"🌐 Landing page disponible en: http://localhost:8000/")
+
+# Configurar archivos estáticos
+static_path = Path(__file__).parent / "frontend" / "static"
+if static_path.exists():
+    app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 
 
 @app.on_event("shutdown")
@@ -139,9 +183,14 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 
 # Endpoints principales
-@app.get("/", tags=["root"])
-async def root():
-    """Endpoint raíz con información de la API"""
+@app.get("/", tags=["frontend"], include_in_schema=False)
+@app.get("/landing", tags=["frontend"])
+async def landing_page():
+    """Servir la página de inicio (landing page)"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "index.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    # Si no existe el archivo, mostrar mensaje JSON
     return {
         "message": f"Bienvenido a {settings.PROJECT_NAME}",
         "version": settings.VERSION,
@@ -150,6 +199,131 @@ async def root():
         "docs_url": "/docs",
         "openapi_url": "/openapi.json"
     }
+
+
+@app.get("/admin/dashboard", tags=["admin"], include_in_schema=False)
+@app.get("/admin", tags=["admin"], include_in_schema=False)
+async def admin_dashboard():
+    """Servir el dashboard administrativo"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "admin" / "dashboard.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {
+        "message": "Admin dashboard not found",
+        "status": "error"
+    }
+
+
+# Dashboard routes para roles autenticados
+@app.get("/dashboard", tags=["frontend"], include_in_schema=False)
+async def dashboard_page():
+    """Servir el dashboard del usuario (estudiante/empresa)"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "dashboard.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Dashboard no encontrado", "status": "error"}
+
+
+@app.get("/profile", tags=["frontend"], include_in_schema=False)
+async def profile_page():
+    """Servir la página de perfil del usuario"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "profile.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de perfil no encontrada", "status": "error"}
+
+
+@app.get("/buscar-candidatos", tags=["frontend"], include_in_schema=False)
+async def buscar_candidatos_page():
+    """Servir la página de búsqueda de candidatos (para empresas)"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "buscar-candidatos.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de búsqueda de candidatos no encontrada", "status": "error"}
+
+
+@app.get("/mis-vacantes", tags=["frontend"], include_in_schema=False)
+@app.get("/company/mis-vacantes", tags=["frontend"], include_in_schema=False)
+async def mis_vacantes_page():
+    """Servir la página de mis vacantes (para empresas)"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "company" / "mis-vacantes.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de mis vacantes no encontrada", "status": "error"}
+
+
+@app.get("/admin/users", tags=["frontend"], include_in_schema=False)
+async def admin_users_page():
+    """Servir la página de gestión de usuarios (para administradores)"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "admin" / "users.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de gestión de usuarios no encontrada", "status": "error"}
+
+
+@app.get("/admin/analytics", tags=["frontend"], include_in_schema=False)
+async def admin_analytics_page():
+    """Servir la página de analítica (para administradores)"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "admin" / "analytics.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de analítica no encontrada", "status": "error"}
+
+
+
+@app.get("/applications", tags=["frontend"], include_in_schema=False)
+async def applications_page():
+    """Servir la página de aplicaciones (para estudiantes)"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "applications.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de aplicaciones no encontrada", "status": "error"}
+
+
+@app.get("/login", tags=["frontend"], include_in_schema=False)
+async def login_page():
+    """Servir la página de login"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "login.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de login no encontrada", "status": "error"}
+
+
+@app.get("/logout-test", tags=["testing"], include_in_schema=False)
+async def logout_test_page():
+    """Servir la página de testing de logout (E2E Testing)"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "logout-test.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de logout test no encontrada", "status": "error"}
+
+
+# Sub-sites Pages
+@app.get("/oportunidades", tags=["listings"], include_in_schema=False)
+async def oportunidades_page():
+    """Servir la página de oportunidades (empleos)"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "oportunidades.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de oportunidades no encontrada", "status": "error"}
+
+
+@app.get("/empresas", tags=["listings"], include_in_schema=False)
+async def empresas_page():
+    """Servir la página de empresas"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "empresas.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de empresas no encontrada", "status": "error"}
+
+
+@app.get("/estudiantes", tags=["listings"], include_in_schema=False)
+async def estudiantes_page():
+    """Servir la página de estudiantes"""
+    template_path = Path(__file__).parent / "frontend" / "templates" / "student" / "estudiantes.html"
+    if template_path.exists():
+        return FileResponse(str(template_path), media_type="text/html")
+    return {"message": "Página de estudiantes no encontrada", "status": "error"}
 
 
 @app.get("/health", tags=["health"])
@@ -229,11 +403,24 @@ app.include_router(students.router, prefix=settings.API_V1_STR)
 from app.api.endpoints import job_scraping
 app.include_router(job_scraping.router, prefix=settings.API_V1_STR)
 
-# TODO: Incluir otros routers cuando estén implementados
-# app.include_router(jobs.router, prefix=settings.API_V1_STR)
-# app.include_router(companies.router, prefix=settings.API_V1_STR)
-# app.include_router(matching.router, prefix=settings.API_V1_STR)
-# app.include_router(admin.router, prefix=settings.API_V1_STR)
+# Gestión de empresas - ✅ IMPLEMENTADO
+from app.api.endpoints import companies
+app.include_router(companies.router, prefix=settings.API_V1_STR)
+
+# Module 2: Encryption Integration - Job Postings con Encriptación - ✅ IMPLEMENTADO
+# Include jobs router (con autocomplete consolidado de suggestions)
+from app.api.endpoints import jobs
+app.include_router(jobs.router, prefix=settings.API_V1_STR)
+
+# NOTE: suggestions.py ha sido consolidado en jobs.py (autocomplete endpoints)
+# NOTE: matching.py ha sido consolidado en students.py (búsqueda por skills)
+
+# ✅ HABILITADOS: Routers de matching y admin para acceso a todos los endpoints
+from app.api.endpoints import matching
+app.include_router(matching.router, prefix=settings.API_V1_STR)
+
+from app.api.endpoints import admin
+app.include_router(admin.router, prefix=settings.API_V1_STR)
 
 
 if __name__ == "__main__":

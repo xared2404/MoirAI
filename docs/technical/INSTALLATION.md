@@ -58,15 +58,24 @@ source .venv/bin/activate
 .venv\Scripts\activate.bat
 ```
 
-### 2. Instalar Dependencias
-```bash
-# Actualizar pip
-pip install --upgrade pip
+### 2. Instalar Dependencias del Proyecto
 
-# Instalar dependencias del proyecto
+```bash
+# ⚠️ IMPORTANTE: Asegúrate de tener el entorno virtual activado
+source .venv/bin/activate  # En Windows: .venv\Scripts\activate
+
+# Actualizar pip para evitar problemas de compatibilidad
+pip install --upgrade pip setuptools wheel
+
+# Instalar TODAS las dependencias del proyecto
+# El archivo requirements.txt contiene TODAS las dependencias necesarias:
+# - Scraping: BeautifulSoup4, lxml, httpx
+# - NLP: spaCy, scikit-learn, pandas, numpy
+# - Validación: pydantic, email-validator
+# - Base de datos: sqlmodel, psycopg2, alembic
 pip install -r requirements.txt
 
-# Verificar instalación
+# Verificar instalación exitosa
 pip list
 ```
 

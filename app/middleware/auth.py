@@ -4,14 +4,18 @@ Implementa autenticación basada en API keys dinámicas y auditoría
 """
 from typing import Optional, List
 from datetime import datetime
+import logging
+import asyncio
 from fastapi import HTTPException, Header, Request, Depends
-from sqlmodel import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import get_session
 from app.models import AuditLog
 from app.schemas import UserContext
 from app.services.api_key_service import api_key_service
+
+logger = logging.getLogger(__name__)
 
 
 class Role:
@@ -29,12 +33,18 @@ class AuthService:
     async def get_current_user(
         request: Request,
         x_api_key: Optional[str] = Header(default=None),
-        session: Session = Depends(get_session)
+        session = Depends(get_session)  # AsyncSession
     ) -> UserContext:
-        """Obtener usuario actual basado en API key dinámica"""
+        """
+        ✅ UNIFIED AUTHENTICATION: Usar SOLO X-API-Key header
+        
+        No soportamos Authorization Bearer para evitar confusiones.
+        Toda autenticación debe usar: X-API-Key: <api_key_value>
+        """
         
         # Usuario anónimo si no hay API key
         if not x_api_key:
+            logger.debug(f"⚠️  No hay X-API-Key en la request - retornando usuario anónimo")
             return UserContext(
                 role=Role.ANONYMOUS,
                 user_id=None,
@@ -42,11 +52,21 @@ class AuthService:
                 permissions=[]
             )
         
-        # Verificar API key dinámica primero
-        key_info = api_key_service.validate_api_key(session, x_api_key)
+        logger.debug(f"🔑 X-API-Key detectada: {x_api_key[:20]}...")
+        
+        # Verificar API key dinámica
+        try:
+            key_info = await api_key_service.validate_api_key(session, x_api_key)
+        except AttributeError as e:
+            logger.warning(f"⚠️  Error validando API key dinámica: {e}, usando fallback")
+            key_info = None
+        except Exception as e:
+            logger.warning(f"⚠️  Error en validate_api_key: {e}")
+            key_info = None
         
         if key_info:
-            # API key válida - crear contexto de usuario
+            # ✅ API key válida - crear contexto de usuario
+            logger.info(f"✅ API key válida: user_id={key_info['user_id']}, role={key_info['user_type']}")
             user_context = UserContext(
                 role=key_info["user_type"],
                 user_id=key_info["user_id"],
@@ -55,19 +75,27 @@ class AuthService:
             )
         else:
             # Fallback a API keys estáticas (para compatibilidad)
+            logger.debug(f"⚠️  Fallback a API keys estáticas")
             user_context = AuthService._check_static_api_keys(x_api_key)
         
-        # Registrar actividad en log de auditoría
-        await AuthService._log_activity(
-            session=session,
-            actor_role=user_context.role,
-            actor_id=user_context.email or str(user_context.user_id),
-            actor_ip=AuthService._get_client_ip(request),
-            action="api_access",
-            resource=str(request.url.path),
-            success=True,
-            details=f"API key: {x_api_key[:10]}..." if x_api_key else None
-        )
+        # Registrar actividad en log de auditoría (async)
+        # NOTA: No usar asyncio.create_task aquí - causa race conditions con AsyncSession
+        # El logging se hace de forma simple y directa sin background tasks
+        try:
+            if settings.ENABLE_AUDIT_LOGGING:
+                audit_log = AuditLog(
+                    actor_role=user_context.role,
+                    actor_id=user_context.email or str(user_context.user_id),
+                    actor_ip=AuthService._get_client_ip(request),
+                    action="api_access",
+                    resource=str(request.url.path),
+                    success=True,
+                    details=f"API key: {x_api_key[:10]}..." if x_api_key else None
+                )
+                session.add(audit_log)
+                await session.commit()
+        except Exception as e:
+            logger.debug(f"⚠️  Error logging activity (non-blocking): {e}")
         
         return user_context
     
@@ -119,36 +147,6 @@ class AuthService:
         
         # Fallback a IP del cliente directo
         return request.client.host if request.client else "unknown"
-    
-    @staticmethod
-    async def _log_activity(
-        session: Session,
-        actor_role: str,
-        actor_id: Optional[str],
-        actor_ip: str,
-        action: str,
-        resource: Optional[str],
-        success: bool,
-        details: Optional[str] = None,
-        error_message: Optional[str] = None
-    ):
-        """Registrar actividad en log de auditoría"""
-        if not settings.ENABLE_AUDIT_LOGGING:
-            return
-        
-        audit_log = AuditLog(
-            actor_role=actor_role,
-            actor_id=actor_id,
-            actor_ip=actor_ip,
-            action=action,
-            resource=resource,
-            details=details,
-            success=success,
-            error_message=error_message
-        )
-        
-        session.add(audit_log)
-        session.commit()
 
 
 class PermissionChecker:
@@ -257,16 +255,13 @@ security_middleware = SecurityMiddleware()
 
 
 # Funciones de conveniencia para usar en endpoints
-def get_current_user(
+async def get_current_user(
     request: Request,
     x_api_key: Optional[str] = Header(default=None),
-    session: Session = Depends(get_session)
+    session: AsyncSession = Depends(get_session)
 ) -> UserContext:
     """Función de conveniencia para obtener usuario actual"""
-    import asyncio
-    return asyncio.run(
-        auth_service.get_current_user(request, x_api_key, session)
-    )
+    return await auth_service.get_current_user(request, x_api_key, session)
 
 
 # Aliases para compatibilidad con código existente

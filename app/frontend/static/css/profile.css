@@ -1,0 +1,931 @@
+/* ====================================
+   Profile Page Styles
+   ==================================== */
+
+.profile-main {
+    padding-top: 80px;
+    min-height: 100vh;
+    background: var(--bg-light);
+}
+
+/* Profile Header */
+.profile-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 3rem 20px;
+    text-align: center;
+}
+
+.profile-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.profile-header p {
+    font-size: 1rem;
+    opacity: 0.95;
+}
+
+/* Profile Container */
+.profile-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.profile-content {
+    display: grid !important;
+    grid-template-columns: 1.6fr 1fr !important;
+    gap: 2rem;
+    width: 100% !important;
+}
+
+/* Sidebar */
+.profile-sidebar {
+    display: flex !important;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Main Content */
+.profile-main-content {
+    display: flex !important;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Card Base Style */
+.profile-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.profile-card h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.profile-card h2 i {
+    color: var(--secondary-color);
+    font-size: 1.5rem;
+}
+
+/* Profile Form */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group label span.required {
+    color: #ef4444;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(115, 15, 51, 0.1);
+}
+
+.form-group input.error,
+.form-group textarea.error,
+.form-group select.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-group input.valid,
+.form-group textarea.valid,
+.form-group select.valid {
+    border-color: #10b981;
+}
+
+.error-message {
+    font-size: 0.8rem;
+    color: #ef4444;
+    margin-top: 0.35rem;
+    display: block;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.profile-form .form-row {
+    grid-template-columns: 1fr !important;
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: var(--bg-lighter);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-light);
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+/* CV Upload */
+.cv-upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--bg-lighter);
+}
+
+.cv-upload-area:hover {
+    border-color: var(--secondary-color);
+    background: var(--bg-light);
+}
+
+.cv-upload-area.dragover {
+    border-color: var(--primary-color);
+    background: rgba(115, 15, 51, 0.05);
+}
+
+.cv-upload-area i {
+    font-size: 2.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.cv-upload-area p {
+    color: var(--text-secondary);
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.cv-upload-area .upload-hint {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 0.75rem;
+}
+
+#cv-file-input {
+    display: none;
+}
+
+/* CV Status */
+.cv-status-success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.cv-status-success i {
+    font-size: 2rem;
+    color: #10b981;
+    margin-bottom: 0.5rem;
+}
+
+.cv-status-success p {
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.upload-date {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.cv-status-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+.cv-status-empty i {
+    font-size: 2rem;
+    color: var(--secondary-color);
+    opacity: 0.5;
+    margin-bottom: 0.5rem;
+}
+
+.cv-download-btn,
+.cv-delete-btn {
+    display: none;
+    margin-top: 1rem;
+}
+
+/* Skills Display */
+.skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.skill-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+}
+
+.skill-badge-tech {
+    background: rgba(115, 15, 51, 0.1);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.skill-badge-soft {
+    background: rgba(226, 187, 132, 0.1);
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.skill-score {
+    font-weight: 700;
+    opacity: 0.7;
+}
+
+.skill-remove {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.6;
+    font-size: 0.8rem;
+    padding: 0;
+    margin-left: 0.5rem;
+    transition: opacity 0.2s;
+}
+
+.skill-remove:hover {
+    opacity: 1;
+}
+
+/* Section Divider */
+.section-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 2rem 0;
+}
+
+/* Tabs */
+.profile-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.profile-tab {
+    background: none;
+    border: none;
+    padding: 1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.3s ease;
+}
+
+.profile-tab:hover {
+    color: var(--text-primary);
+}
+
+.profile-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.profile-tab-content {
+    display: none;
+}
+
+.profile-tab-content.active {
+    display: block;
+}
+
+/* Student Fields */
+#student-fields {
+    background: var(--bg-lighter);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+#student-fields .form-row {
+    grid-template-columns: 1fr !important;
+}
+
+/* Main Content - Definido arriba */
+
+/* Danger Zone */
+.danger-zone {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.danger-zone h3 {
+    color: #ef4444;
+    margin-bottom: 1rem;
+}
+
+.danger-zone p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.danger-zone .btn {
+    background: #ef4444;
+    color: white;
+}
+
+.danger-zone .btn:hover {
+    background: #dc2626;
+}
+
+/* ✨ Secciones CV Harvard (Colapsables) - Reutilizando estilos existentes */
+.cv-harvard-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cv-section-collapsible {
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: white;
+}
+
+.cv-section-header {
+    padding: 1.25rem;
+    cursor: pointer;
+    background: var(--bg-lighter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    transition: background 0.3s ease;
+    user-select: none;
+}
+
+.cv-section-header:hover {
+    background: var(--bg-light);
+}
+
+.cv-section-header i {
+    color: var(--secondary-color);
+    transition: transform 0.3s ease;
+    font-size: 1rem;
+}
+
+.cv-section-header.collapsed i {
+    transform: rotate(-90deg);
+}
+
+.cv-section-body {
+    padding: 1.5rem;
+    display: none;
+    background: white;
+}
+
+.cv-section-body.open {
+    display: block;
+}
+
+/* Formularios anidados (Educación, Experiencia) */
+.form-nested-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-nested {
+    background: var(--bg-lighter);
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    border-left: 3px solid var(--primary-color);
+}
+
+.form-nested h4 {
+    margin: 0 0 1rem 0;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+}
+
+.form-nested .form-group {
+    margin-bottom: 0.75rem;
+}
+
+.form-nested .form-group label {
+    font-size: 0.85rem;
+}
+
+.form-nested .form-group input {
+    font-size: 0.9rem;
+}
+
+.form-nested-remove-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-nested-remove-btn:hover {
+    background: #dc2626;
+}
+
+/* Listas simples (Certificaciones, Idiomas) */
+.items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.items-list-item {
+    background: var(--bg-lighter);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--border-color);
+}
+
+.items-list-item input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    padding: 0;
+    margin: 0;
+}
+
+.items-list-item input:focus {
+    outline: none;
+}
+
+.items-list-item-remove {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 0.5rem;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.items-list-item-remove:hover {
+    color: #dc2626;
+}
+
+/* Botones de agregar items */
+.btn-add-item {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.btn-add-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-add-item:active {
+    transform: translateY(0);
+}
+
+/* Textarea para objetivos */
+.cv-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.cv-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(115, 15, 51, 0.1);
+}
+
+/* ✨ NUEVO: Estilos creativos para Harvard CV Builder */
+
+/* Container principal del CV */
+#harvard-cv-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Card de sección CV con estilos mejorados */
+.cv-section-card {
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.cv-section-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--secondary-color);
+}
+
+/* Header de sección con diseño creativo */
+.cv-section-header-styled {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.cv-header-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(115, 15, 51, 0.2);
+}
+
+.cv-section-header-styled h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.cv-section-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0 0;
+}
+
+.cv-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Grid de items Harvard CV */
+.cv-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Items anidados mejorados (Educación, Experiencia) */
+.form-nested {
+    background: linear-gradient(135deg, var(--bg-lighter) 0%, rgba(226, 187, 132, 0.05) 100%);
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--secondary-color);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.form-nested:hover {
+    box-shadow: 0 2px 8px rgba(226, 187, 132, 0.2);
+    transform: translateY(-1px);
+}
+
+.form-nested h4 {
+    margin: 0 0 1rem 0;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.form-nested-remove-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-nested-remove-btn:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+/* Grid de 2 columnas para skills y certifications */
+@media (max-width: 768px) {
+    /* Stack en mobile */
+}
+
+/* Listas simples mejoradas (Certificaciones, Idiomas) */
+.cv-simple-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.items-list-item {
+    background: var(--bg-lighter);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.items-list-item:hover {
+    background: var(--bg-light);
+    border-color: var(--secondary-color);
+}
+
+.items-list-item input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    padding: 0;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.items-list-item input:focus {
+    outline: none;
+}
+
+/* Grid de skills inferidas */
+.cv-skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.skill-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.skill-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.skill-badge-tech {
+    background: rgba(115, 15, 51, 0.1);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.skill-badge-soft {
+    background: rgba(226, 187, 132, 0.1);
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+/* Botón agregar mejorado */
+.btn-add-item {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    align-self: flex-start;
+}
+
+.btn-add-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-add-item:active {
+    transform: translateY(0);
+}
+
+/* Empty states */
+.cv-empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-secondary);
+}
+
+.cv-empty-state i {
+    font-size: 2rem;
+    color: var(--secondary-color);
+    opacity: 0.5;
+    margin-bottom: 0.5rem;
+}
+
+.cv-empty-state p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .profile-content {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .button-group .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .profile-tabs {
+        flex-wrap: wrap;
+    }
+
+    .profile-tab {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-container {
+        padding: 1rem;
+    }
+
+    .profile-card {
+        padding: 1rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        font-size: 16px; /* Prevenir zoom en mobile */
+    }
+
+    .cv-upload-area {
+        padding: 1.5rem 1rem;
+    }
+
+    .cv-upload-area i {
+        font-size: 2rem;
+    }
+}

@@ -29,6 +29,7 @@ email-validator>=2.0.0
 
 # File processing
 PyPDF2>=3.0.1
+pdfplumber>=0.10.0
 pdfminer.six>=20231228
 docx2txt>=0.8
 python-magic>=0.4.27
@@ -54,6 +55,7 @@ python-magic>=0.4.27
 
 # Logging and monitoring
 structlog>=23.2.0
+psutil>=5.9.0  # System and process utilities (for memory monitoring)
 
 # Development and testing
 pytest>=7.4.3
@@ -79,3 +81,7 @@ aiofiles>=23.2.1
 click>=8.1.7
 rich>=13.7.0
 typer>=0.9.0
+
+# Async database drivers and utilities
+asyncpg>=0.29.0  # Async PostgreSQL driver
+greenlet>=3.0.0  # Required by SQLAlchemy for async context switching

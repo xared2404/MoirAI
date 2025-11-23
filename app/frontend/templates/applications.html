@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Aplicaciones - MoirAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .applications-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .applications-header {
+            margin-bottom: 2rem;
+        }
+
+        .applications-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .apps-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-badge {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        .stat-badge strong {
+            display: block;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .stat-badge small {
+            color: var(--text-secondary);
+        }
+
+        .applications-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .app-filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .app-filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .applications-search {
+            flex: 1;
+            display: flex;
+            gap: 0.5rem;
+            min-width: 200px;
+        }
+
+        .applications-search input {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .applications-search select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .applicationsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .application-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .application-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            gap: 1rem;
+        }
+
+        .app-title-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .app-company {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .app-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .app-status.status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .app-status.status-review {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .app-status.status-accepted {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .app-status.status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .app-status.status-withdrawn {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .app-meta {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0 1.5rem 1rem 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .meta-item strong {
+            color: var(--text-primary);
+        }
+
+        .app-warning {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 0.9rem;
+        }
+
+        .app-notes,
+        .app-feedback {
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .app-notes strong,
+        .app-feedback strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .app-feedback {
+            background: #ede9fe;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .app-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .app-actions .btn {
+            flex: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--text-tertiary);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .pagination-app {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination-app button {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-app button:hover:not(:disabled) {
+            background: var(--bg-secondary);
+        }
+
+        .pagination-app button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .applications-controls {
+                flex-direction: column;
+            }
+
+            .applications-search {
+                flex-direction: column;
+            }
+
+            .app-header {
+                flex-direction: column;
+            }
+
+            .app-actions {
+                flex-direction: column;
+            }
+
+            .apps-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/dashboard">
+                    <i class="fas fa-brain"></i>
+                    <span>MoirAI</span>
+                </a>
+            </div>
+
+            <div class="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/oportunidades" class="nav-link">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Oportunidades</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/applications" class="nav-link active">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Aplicaciones</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/profile" class="nav-link">
+                            <i class="fas fa-user"></i>
+                            <span>Mi Perfil</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-cta">
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="applications-container">
+            <!-- Header -->
+            <section class="applications-header">
+                <h1><i class="fas fa-paper-plane"></i> Mis Aplicaciones</h1>
+                <p>Gestiona y sigue el estado de tus solicitudes de empleo</p>
+            </section>
+
+            <!-- Stats -->
+            <div class="apps-stats">
+                <div class="stat-badge">
+                    <strong id="totalApplications">0</strong>
+                    <small>Total</small>
+                </div>
+                <div class="stat-badge">
+                    <strong id="pendingApplications">0</strong>
+                    <small>Pendientes</small>
+                </div>
+                <div class="stat-badge">
+                    <strong id="acceptedApplications">0</strong>
+                    <small>Aceptadas</small>
+                </div>
+                <div class="stat-badge">
+                    <strong id="rejectedApplications">0</strong>
+                    <small>Rechazadas</small>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="applications-controls">
+                <div class="app-filter-btn active" data-filter="all" onclick="filterApplicationsByStatus()">
+                    Todas
+                </div>
+                <div class="app-filter-btn" data-filter="pending" onclick="filterApplicationsByStatus()">
+                    Pendientes
+                </div>
+                <div class="app-filter-btn" data-filter="pending_review" onclick="filterApplicationsByStatus()">
+                    En Revisión
+                </div>
+                <div class="app-filter-btn" data-filter="accepted" onclick="filterApplicationsByStatus()">
+                    Aceptadas
+                </div>
+                <div class="app-filter-btn" data-filter="rejected" onclick="filterApplicationsByStatus()">
+                    Rechazadas
+                </div>
+
+                <div class="applications-search">
+                    <input type="text" id="searchApplications" placeholder="Buscar por empresa o puesto...">
+                    <select id="sortApplications">
+                        <option value="recent">Más Recientes</option>
+                        <option value="oldest">Más Antiguos</option>
+                        <option value="updated">Recientemente Actualizadas</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-secondary" id="clearFiltersBtn" style="white-space: nowrap;">
+                    <i class="fas fa-times"></i> Limpiar
+                </button>
+            </div>
+
+            <!-- Applications List -->
+            <div id="applicationsContainer" class="applicationsContainer">
+                <!-- Cargado dinámicamente -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-app">
+                <button id="prevPageAppBtn" onclick="previousPageApp()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span id="pageInfoApp">Página 1</span>
+                <button id="nextPageAppBtn" onclick="nextPageApp()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Count Info -->
+            <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">
+                Mostrando <strong id="applicationsCount">0</strong> aplicaciones
+            </p>
+        </div>
+    </main>
+
+    <!-- Config -->
+    <script>
+        // ✅ CORRECCIÓN: Detectar dinámicamente la URL base desde el navegador
+        const protocol = window.location.protocol
+        const hostname = window.location.hostname
+        const port = window.location.port
+        const origin = port ? `${protocol}//${hostname}:${port}` : `${protocol}//${hostname}`
+        window.API_BASE_URL = `${origin}/api/v1`
+        console.log('🔗 API Base URL:', window.API_BASE_URL)
+    </script>
+
+    <!-- Scripts -->
+    <script src="/static/js/api-client.js"></script>
+    <script src="/static/js/utils/storage-manager.js"></script>
+    <script src="/static/js/auth-manager.js"></script>
+    <script src="/static/js/notification-manager.js"></script>
+    <script src="/static/js/utils/form-validator.js"></script>
+    <script src="/static/js/protected-page-manager.js"></script>
+    <script src="/static/js/navbar-manager.js"></script>
+    <script src="/static/js/pages/applications.js"></script>
+</body>
+
+</html>

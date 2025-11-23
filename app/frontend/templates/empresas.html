@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Empresas colaboradoras en MoirAI">
+    <title>Empresas - MoirAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navegación Sidebar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/">
+                    <i class="fas fa-brain"></i>
+                    <span>MoirAI</span>
+                </a>
+            </div>
+
+            <div class="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link" data-tooltip="Inicio">
+                            <i class="fas fa-home"></i>
+                            <span>Inicio</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/oportunidades" class="nav-link" data-tooltip="Oportunidades">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Oportunidades</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/empresas" class="nav-link active" data-tooltip="Empresas">
+                            <i class="fas fa-building"></i>
+                            <span>Empresas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/estudiantes" class="nav-link" data-tooltip="Estudiantes">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Estudiantes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin" class="nav-link" data-tooltip="Admin">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Admin</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-cta">
+                <button class="btn btn-secondary" onclick="window.location.href='/'">
+                    <i class="fas fa-sign-in-alt"></i> Inicia Sesión
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="listing-header">
+        <div class="listing-header-content">
+            <h1>Empresas Colaboradoras</h1>
+            <p>Descubre las empresas que buscan talento en nuestra plataforma</p>
+            <div class="listing-search-bar">
+                <input type="text" id="searchCompanies" placeholder="Busca una empresa..." class="search-input">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <div class="listing-container">
+        <!-- Sidebar con Filtros -->
+        <aside class="listing-sidebar">
+            <div class="filter-section">
+                <h3 class="filter-title">
+                    <i class="fas fa-filter"></i> Filtros
+                    <button class="clear-filters-btn" onclick="clearFilters()">Limpiar</button>
+                </h3>
+
+                <!-- Sector -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-industry"></i> Sector
+                    </label>
+                    <select id="sectorFilter" class="filter-select">
+                        <option value="">Todos los sectores</option>
+                        <option value="tecnologia">Tecnología</option>
+                        <option value="finanzas">Finanzas</option>
+                        <option value="telecom">Telecomunicaciones</option>
+                        <option value="retail">Retail</option>
+                        <option value="energia">Energía</option>
+                    </select>
+                </div>
+
+                <!-- Tamaño de empresa -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-users"></i> Tamaño
+                    </label>
+                    <div class="filter-checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="startup" class="size-filter"> Startup
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="pyme" class="size-filter"> PyME
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="grande" class="size-filter"> Empresa Grande
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Ubicación -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-map-marker-alt"></i> Ubicación
+                    </label>
+                    <select id="locationFilter" class="filter-select">
+                        <option value="">Todas las ciudades</option>
+                        <option value="córdoba">Córdoba</option>
+                        <option value="buenos-aires">Buenos Aires</option>
+                        <option value="mendoza">Mendoza</option>
+                        <option value="rosario">Rosario</option>
+                    </select>
+                </div>
+
+                <!-- Acreditación -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-certificate"></i> Acreditación
+                    </label>
+                    <div class="filter-checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="verified" class="accred-filter"> Verificada
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="iso" class="accred-filter"> Certificada ISO
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="top" class="accred-filter"> Top Empleadora
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Oportunidades abiertas -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-briefcase"></i> Vacantes
+                    </label>
+                    <div class="filter-checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="has-jobs" class="jobs-filter"> Con vacantes abiertas
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="listing-main">
+            <!-- Sorting and View Options -->
+            <div class="listing-controls">
+                <div class="results-info">
+                    <span id="companyCount">8</span> empresas encontradas
+                </div>
+                <div class="view-toggle">
+                    <button class="view-btn active" id="gridViewBtn" onclick="setViewMode('grid')">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" id="listViewBtn" onclick="setViewMode('list')">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Company Cards Grid -->
+            <div class="companies-container grid-view" id="companiesContainer">
+                <!-- Company cards populated by JavaScript -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="pagination-btn" onclick="previousPage()">
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <div class="pagination-numbers" id="paginationNumbers">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <button class="pagination-btn" onclick="nextPage()">
+                    Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>MoirAI</h4>
+                    <p>Plataforma inteligente de matching laboral para estudiantes de UNRC.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Producto</h4>
+                    <ul>
+                        <li><a href="#">Características</a></li>
+                        <li><a href="#">Precios</a></li>
+                        <li><a href="#">Seguridad</a></li>
+                        <li><a href="#">Actualizaciones</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Compañía</h4>
+                    <ul>
+                        <li><a href="#">Acerca de</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careras</a></li>
+                        <li><a href="#">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacidad</a></li>
+                        <li><a href="#">Términos</a></li>
+                        <li><a href="#">Cookies</a></li>
+                        <li><a href="#">LFPDPPP</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MoirAI. Todos los derechos reservados. Desarrollado con ❤️ por UNRC</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/navbar-manager.js"></script>
+    <script src="/static/js/pages/company-search.js"></script>
+</body>
+
+</html>
